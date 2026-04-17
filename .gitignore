@@ -3,4 +3,4 @@
 - backend/.venv
 - __pycache__
 - backend/.env*
-- /docs
+- /docs/

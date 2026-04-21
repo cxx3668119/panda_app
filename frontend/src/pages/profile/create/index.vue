@@ -1,16 +1,20 @@
 <template>
-  <main class="page">
-    <h1 class="page-title">创建你的命盘档案</h1>
-    <p class="page-subtitle">填写基础出生信息后，即可生成首份命盘解读。</p>
+  <main class="page-shell">
+    <section class="page-hero">
+      <div class="eyebrow">Create profile</div>
+      <h1 class="page-title">创建你的命盘档案</h1>
+      <p class="page-subtitle">填写基础出生信息后，即可生成首份命盘解读。</p>
+    </section>
 
     <ProfileForm v-model="form" @submit="handleSubmit" />
 
-    <ErrorRetryBox v-if="error" class="mt-16">
-      {{ error }}
-    </ErrorRetryBox>
-    <LoadingState v-else-if="loading" text="正在生成命盘解读..." />
-
-    <DisclaimerBlock class="mt-20" text="出生时辰不确定也可以继续体验，但 AI 提问能力会受限。" />
+    <div class="mt-4 space-y-4">
+      <ErrorRetryBox v-if="error">
+        {{ error }}
+      </ErrorRetryBox>
+      <LoadingState v-else-if="loading" text="正在生成命盘解读..." />
+      <DisclaimerBlock text="出生时辰不确定也可以继续体验，但 AI 提问能力会受限。" />
+    </div>
   </main>
 </template>
 

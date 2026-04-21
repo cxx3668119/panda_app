@@ -1,11 +1,11 @@
 <template>
-  <div class="card">
-    <div class="row space-between">
-      <div>
-        <div class="muted">剩余提问次数</div>
-        <div class="score" style="font-size: 28px">{{ remain }}</div>
+  <div class="surface-card">
+    <div class="flex items-start justify-between gap-4">
+      <div class="space-y-1">
+        <div class="eyebrow">剩余提问次数</div>
+        <div class="font-sans text-4xl font-semibold leading-none text-accent">{{ remain }}</div>
       </div>
-      <div class="muted">免费 {{ quota.freeLimit - quota.freeUsed }} / 付费 {{ quota.paidBalance }}</div>
+      <div class="text-right text-sm leading-6 text-muted">免费 {{ quota.freeLimit - quota.freeUsed }} / 付费 {{ quota.paidBalance }}</div>
     </div>
   </div>
 </template>

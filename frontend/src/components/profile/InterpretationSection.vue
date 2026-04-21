@@ -1,7 +1,7 @@
 <template>
-  <div class="section-card">
+  <div class="surface-card space-y-3">
     <h3 class="section-title">{{ title }}</h3>
-    <p>{{ content }}</p>
+    <p class="text-sm leading-7 text-ink/85 sm:text-base">{{ content }}</p>
   </div>
 </template>
 

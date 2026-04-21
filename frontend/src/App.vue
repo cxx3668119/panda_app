@@ -1,5 +1,5 @@
 <template>
-  <div class="app-shell">
+  <div class="min-h-screen text-ink">
     <RouterView />
   </div>
 </template>

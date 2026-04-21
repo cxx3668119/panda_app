@@ -1,23 +1,30 @@
 <template>
-  <main class="page">
-    <h1 class="page-title">AI 八字算命助手</h1>
-    <p class="page-subtitle">先用邮箱验证码登录，开始你的命盘解读与今日日运体验。</p>
+  <main class="page-shell">
+    <section class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+      <div class="page-hero pt-2 lg:pt-10">
+        <div class="eyebrow">Bazi companion</div>
+        <h1 class="page-title">AI 八字算命助手</h1>
+        <p class="page-subtitle">先用邮箱验证码登录，开始你的命盘解读、今日日运与陪伴式问答体验。</p>
+      </div>
 
-    <AuthEmailForm
-      :email="email"
-      :code="code"
-      @update:email="email = $event"
-      @update:code="code = $event"
-      @send-code="handleSendCode"
-      @submit="handleLogin"
-    />
+      <div class="space-y-4">
+        <AuthEmailForm
+          :email="email"
+          :code="code"
+          @update:email="email = $event"
+          @update:code="code = $event"
+          @send-code="handleSendCode"
+          @submit="handleLogin"
+        />
 
-    <ErrorRetryBox v-if="error" class="mt-16">
-      {{ error }}
-    </ErrorRetryBox>
-    <LoadingState v-else-if="loading" text="正在登录..." />
+        <ErrorRetryBox v-if="error">
+          {{ error }}
+        </ErrorRetryBox>
+        <LoadingState v-else-if="loading" text="正在登录..." />
 
-    <DisclaimerBlock class="mt-20" text="本产品内容仅供娱乐陪伴和自我探索参考，不构成医疗、法律、投资等专业建议。" />
+        <DisclaimerBlock text="本产品内容仅供娱乐陪伴和自我探索参考，不构成医疗、法律、投资等专业建议。" />
+      </div>
+    </section>
   </main>
 </template>
 

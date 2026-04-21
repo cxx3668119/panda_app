@@ -1,5 +1,5 @@
 <template>
-  <div class="context-bar">
+  <div class="info-box">
     {{ text }}
   </div>
 </template>

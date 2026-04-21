@@ -1,5 +1,5 @@
 <template>
-  <div class="notice">
+  <div class="error-box">
     <slot />
   </div>
 </template>

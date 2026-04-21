@@ -1,21 +1,24 @@
 <template>
-  <main class="page" v-if="today">
-    <h1 class="page-title">今日日运</h1>
-    <p class="page-subtitle">你的每日状态会按当天上下文固定生成，适合反复查看与回顾。</p>
+  <main v-if="today" class="page-shell">
+    <section class="page-hero">
+      <div class="eyebrow">Daily reading</div>
+      <h1 class="page-title">今日日运</h1>
+      <p class="page-subtitle">你的每日状态会按当天上下文固定生成，适合反复查看与回顾。</p>
+    </section>
 
     <DailyFortuneCard :data="today" />
-    <DailyFortuneDetail class="mt-20" :data="today" />
+    <DailyFortuneDetail class="mt-6" :data="today" />
 
-    <div class="actions mt-20">
-      <RouterLink class="primary-btn" to="/ai/chat">发起 AI 提问</RouterLink>
-      <button class="ghost-btn" type="button">分享（预埋）</button>
-      <RouterLink class="secondary-btn" to="/daily/history">查看历史日运</RouterLink>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <RouterLink class="btn-primary" to="/ai/chat">发起 AI 提问</RouterLink>
+      <button class="btn-ghost" type="button">分享（预埋）</button>
+      <RouterLink class="btn-secondary" to="/daily/history">查看历史日运</RouterLink>
     </div>
 
     <BottomNav />
   </main>
 
-  <main v-else class="page">
+  <main v-else class="page-shell">
     <LoadingState text="正在生成今日日运..." />
   </main>
 </template>

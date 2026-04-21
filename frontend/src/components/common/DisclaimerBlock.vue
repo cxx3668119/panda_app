@@ -1,5 +1,5 @@
 <template>
-  <div class="disclaimer">
+  <div class="warn-box">
     {{ text }}
   </div>
 </template>

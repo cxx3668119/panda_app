@@ -1,29 +1,31 @@
 <template>
-  <main class="page" v-if="interpretation && profile">
+  <main v-if="interpretation && profile" class="page-shell">
     <InterpretationSummaryCard :title="interpretation.summaryTitle" :description="interpretation.advice" />
 
-    <div class="actions mt-20">
-      <RouterLink class="secondary-btn" to="/daily">查看今日日运</RouterLink>
-      <RouterLink class="ghost-btn" to="/profile/create">修改出生信息</RouterLink>
-      <RouterLink class="primary-btn" :to="profile.birthTimeUnknown ? '/profile/create' : '/ai/chat'">
+    <div class="mt-6 flex flex-wrap gap-3">
+      <RouterLink class="btn-secondary" to="/daily">查看今日日运</RouterLink>
+      <RouterLink class="btn-ghost" to="/profile/create">修改出生信息</RouterLink>
+      <RouterLink class="btn-primary" :to="profile.birthTimeUnknown ? '/profile/create' : '/ai/chat'">
         {{ profile.birthTimeUnknown ? '补充时辰后提问' : '去 AI 提问' }}
       </RouterLink>
     </div>
 
-    <ErrorRetryBox v-if="profile.birthTimeUnknown" class="mt-16">
+    <ErrorRetryBox v-if="profile.birthTimeUnknown" class="mt-4">
       未知时辰暂不支持 AI 提问，请补充时辰后再使用互动问答。
     </ErrorRetryBox>
 
-    <InterpretationSection class="mt-20" title="性格特征" :content="interpretation.personality" />
-    <InterpretationSection class="mt-16" title="优势能力" :content="interpretation.strength" />
-    <InterpretationSection class="mt-16" title="风险提醒" :content="interpretation.risk" />
-    <InterpretationSection class="mt-16" title="成长建议" :content="interpretation.advice" />
-    <InterpretationSection class="mt-16" title="长文解读" :content="interpretation.fullContent" />
-    <DisclaimerBlock class="mt-20" :text="interpretation.disclaimer" />
+    <InterpretationSection class="mt-6" title="性格特征" :content="interpretation.personality" />
+    <InterpretationSection class="mt-4" title="优势能力" :content="interpretation.strength" />
+    <InterpretationSection class="mt-4" title="风险提醒" :content="interpretation.risk" />
+    <InterpretationSection class="mt-4" title="成长建议" :content="interpretation.advice" />
+    <InterpretationSection class="mt-4" title="长文解读" :content="interpretation.fullContent" />
+    <div class="mt-6">
+      <DisclaimerBlock :text="interpretation.disclaimer" />
+    </div>
     <BottomNav />
   </main>
 
-  <main v-else class="page">
+  <main v-else class="page-shell">
     <LoadingState text="正在加载命盘解读..." />
   </main>
 </template>

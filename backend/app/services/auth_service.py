@@ -3,8 +3,8 @@ from app.schemas.auth import EmailLoginRequest, LoginResponse, SendEmailCodeRequ
 
 
 class AuthService:
-    def __init__(self) -> None:
-        self.repository = AuthRepository()
+    def __init__(self, repository: AuthRepository) -> None:
+        self.repository = repository
 
     def send_email_code(self, payload: SendEmailCodeRequest) -> dict:
         return self.repository.send_code(str(payload.email))

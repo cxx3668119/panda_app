@@ -3,8 +3,8 @@ from app.schemas.reminder import ReminderSettingsResponse, ReminderSettingsUpdat
 
 
 class ReminderService:
-    def __init__(self) -> None:
-        self.repository = ReminderRepository()
+    def __init__(self, repository: ReminderRepository) -> None:
+        self.repository = repository
 
     def get_settings(self) -> ReminderSettingsResponse:
         return ReminderSettingsResponse(**self.repository.get_settings())

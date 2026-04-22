@@ -1,10 +1,21 @@
 <template>
   <main class="page-shell">
     <section class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
-      <div class="page-hero pt-2 lg:pt-10">
-        <div class="eyebrow">Bazi companion</div>
-        <h1 class="page-title">AI 八字算命助手</h1>
-        <p class="page-subtitle">先用邮箱验证码登录，开始你的命盘解读、今日日运与陪伴式问答体验。</p>
+      <div class="page-hero panda-panel rounded-[32px] border border-line/70 bg-panel/75 p-6 pt-6 lg:pt-8">
+        <div class="flex items-center gap-3 text-sm text-muted">
+          <img alt="熊猫徽章" class="h-12 w-12 rounded-2xl border border-line/70 bg-white/80 p-2 shadow-soft" src="/panda-badge.svg" />
+          <div>
+            <div class="eyebrow">Panda companion</div>
+            <div class="text-xs leading-6">东方纸感与陪伴式解读的轻量入口</div>
+          </div>
+        </div>
+        <div class="mt-5 space-y-3">
+          <h1 class="page-title">AI 八字算命助手</h1>
+          <p class="page-subtitle">先用邮箱验证码登录，开始你的命盘解读、今日日运与陪伴式问答体验。</p>
+        </div>
+        <div class="mt-6 overflow-hidden rounded-[28px] border border-accent/15 bg-white/72 p-4 shadow-soft">
+          <img alt="熊猫主题插画" class="h-auto w-full" src="/panda-mark.svg" />
+        </div>
       </div>
 
       <div class="space-y-4">

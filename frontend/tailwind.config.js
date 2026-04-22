@@ -3,27 +3,28 @@ export default {
   theme: {
     extend: {
       colors: {
-        sand: '#ece9e0',
-        cream: '#f5f3ec',
-        ink: '#141413',
-        accent: '#d97757',
-        accentSoft: '#f2d8cd',
-        line: '#d8d2c4',
-        muted: '#6b6860',
-        panel: '#fffdf8',
+        sand: '#f3f1ea',
+        cream: '#f8f7f2',
+        ink: '#161715',
+        accent: '#5f7f62',
+        accentSoft: '#dfe9dc',
+        accentDeep: '#46604b',
+        line: '#d7dbd2',
+        muted: '#667067',
+        panel: '#fdfcf8',
         danger: '#c0453a',
-        warning: '#92400e',
-        warningBg: '#fef3c7',
-        info: '#155e75',
-        infoBg: '#ecfeff'
+        warning: '#8b5a18',
+        warningBg: '#f7eed2',
+        info: '#335c4a',
+        infoBg: '#eef5ef'
       },
       fontFamily: {
         sans: ['"PingFang SC"', '"Microsoft YaHei"', 'system-ui', 'sans-serif'],
-        serif: ['"Georgia"', '"Times New Roman"', 'serif']
+        serif: ['"Noto Serif SC"', '"Source Han Serif SC"', '"STSong"', 'serif']
       },
       boxShadow: {
-        soft: '0 18px 40px rgba(20, 20, 19, 0.08)',
-        glow: '0 10px 30px rgba(217, 119, 87, 0.14)'
+        soft: '0 18px 40px rgba(22, 23, 21, 0.08)',
+        glow: '0 14px 36px rgba(95, 127, 98, 0.18)'
       },
       borderRadius: {
         '4xl': '2rem'

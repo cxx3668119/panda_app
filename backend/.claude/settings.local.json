@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(DATABASE_URL='mysql+pymysql://root:88888888@127.0.0.1:3306/panda-app?charset=utf8mb4' python *)"
+    ]
+  }
+}

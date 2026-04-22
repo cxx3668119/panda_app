@@ -8,8 +8,8 @@
     font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
     line-height: 1.5;
     font-weight: 400;
-    color: #141413;
-    background: #ece9e0;
+    color: #161715;
+    background: #f3f1ea;
   }
 
   * {
@@ -26,10 +26,23 @@
   body {
     min-width: 320px;
     background:
-      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(217, 119, 87, 0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 70% 50% at 80% 0%, rgba(217, 119, 87, 0.05) 0%, transparent 65%),
-      #ece9e0;
-    color: #141413;
+      radial-gradient(
+        ellipse 72% 54% at 18% 8%,
+        rgba(95, 127, 98, 0.1) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 54% 42% at 82% 4%,
+        rgba(36, 44, 39, 0.05) 0%,
+        transparent 62%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.28) 0%,
+        rgba(243, 241, 234, 0) 32%
+      ),
+      #f3f1ea;
+    color: #161715;
   }
 
   button,
@@ -50,7 +63,7 @@
 
 @layer components {
   .page-shell {
-    @apply mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 pb-32 pt-6 sm:px-6 lg:px-8;
+    @apply relative mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 pb-32 pt-6 sm:px-6 lg:px-8;
   }
 
   .page-hero {
@@ -66,11 +79,11 @@
   }
 
   .surface-card {
-    @apply rounded-[28px] border border-line/70 bg-panel/95 p-5 shadow-soft backdrop-blur-sm sm:p-6;
+    @apply rounded-[28px] border border-line/80 bg-panel/95 p-5 shadow-soft backdrop-blur-sm sm:p-6;
   }
 
   .surface-hero {
-    @apply rounded-[32px] border border-accent/15 bg-gradient-to-br from-panel via-[#f7f1e7] to-[#f1e0d6] p-6 shadow-glow sm:p-7;
+    @apply rounded-[32px] border border-accent/20 bg-gradient-to-br from-panel via-[#f4f5ef] to-[#e8ede3] p-6 shadow-glow sm:p-7;
   }
 
   .section-title {
@@ -86,15 +99,15 @@
   }
 
   .field-input {
-    @apply w-full rounded-2xl border border-line bg-white/90 px-4 py-3 text-sm text-ink outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/15 disabled:cursor-not-allowed disabled:bg-[#f3efe6] disabled:text-muted;
+    @apply w-full rounded-2xl border border-line bg-white/90 px-4 py-3 text-sm text-ink outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/15 disabled:cursor-not-allowed disabled:bg-[#eef0e8] disabled:text-muted;
   }
 
   .btn-primary {
-    @apply inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-[#c96b4d] disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-accentDeep disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .btn-secondary {
-    @apply inline-flex min-h-11 items-center justify-center rounded-full border border-accent/25 bg-accentSoft/70 px-5 py-3 text-sm font-semibold text-[#8c4d37] transition hover:-translate-y-0.5 hover:bg-accentSoft disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex min-h-11 items-center justify-center rounded-full border border-accent/20 bg-accentSoft/80 px-5 py-3 text-sm font-semibold text-accentDeep transition hover:-translate-y-0.5 hover:bg-accentSoft disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .btn-ghost {
@@ -102,18 +115,125 @@
   }
 
   .chip {
-    @apply inline-flex items-center rounded-full bg-accentSoft/80 px-3 py-1.5 text-xs font-semibold text-[#8c4d37];
+    @apply inline-flex items-center rounded-full border border-accent/10 bg-accentSoft px-3 py-1.5 text-xs font-semibold text-accentDeep;
   }
 
   .info-box {
-    @apply rounded-2xl border border-[#bfe3ea] bg-infoBg px-4 py-3 text-sm leading-6 text-info;
+    @apply rounded-2xl border border-accent/20 bg-infoBg px-4 py-3 text-sm leading-6 text-info;
   }
 
   .warn-box {
-    @apply rounded-2xl border border-[#f2d59f] bg-warningBg px-4 py-3 text-sm leading-6 text-warning;
+    @apply rounded-2xl border border-[#dac89d] bg-warningBg px-4 py-3 text-sm leading-6 text-warning;
   }
 
   .error-box {
     @apply rounded-2xl border border-[#efc2bb] bg-[#fbefed] px-4 py-3 text-sm leading-6 text-danger;
+  }
+
+  .panda-panel {
+    @apply relative overflow-hidden;
+  }
+
+  .panda-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        circle at 14% 18%,
+        rgba(95, 127, 98, 0.12) 0,
+        rgba(95, 127, 98, 0.12) 4px,
+        transparent 5px
+      ),
+      radial-gradient(
+        circle at 84% 18%,
+        rgba(22, 23, 21, 0.08) 0,
+        rgba(22, 23, 21, 0.08) 6px,
+        transparent 7px
+      ),
+      linear-gradient(
+        135deg,
+        transparent 0 46%,
+        rgba(95, 127, 98, 0.08) 46% 54%,
+        transparent 54% 100%
+      );
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .panda-panel > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .panda-watermark {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .panda-watermark::before,
+  .panda-watermark::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(2px);
+  }
+
+  .panda-watermark::before {
+    width: 320px;
+    height: 320px;
+    right: -96px;
+    top: 92px;
+    background:
+      radial-gradient(
+        circle at 38% 38%,
+        rgba(22, 23, 21, 0.08) 0 18px,
+        transparent 19px
+      ),
+      radial-gradient(
+        circle at 64% 34%,
+        rgba(22, 23, 21, 0.08) 0 14px,
+        transparent 15px
+      ),
+      radial-gradient(
+        circle at 50% 55%,
+        rgba(255, 255, 255, 0.34) 0 86px,
+        transparent 87px
+      ),
+      radial-gradient(
+        circle at 50% 55%,
+        rgba(95, 127, 98, 0.08) 0 118px,
+        transparent 119px
+      );
+    opacity: 0.6;
+  }
+
+  .panda-watermark::after {
+    width: 220px;
+    height: 420px;
+    left: -48px;
+    bottom: 80px;
+    background:
+      linear-gradient(
+        12deg,
+        rgba(95, 127, 98, 0.12) 0 16%,
+        transparent 16% 100%
+      ),
+      linear-gradient(
+        22deg,
+        transparent 0 50%,
+        rgba(95, 127, 98, 0.12) 50% 56%,
+        transparent 56% 100%
+      ),
+      linear-gradient(
+        14deg,
+        transparent 0 72%,
+        rgba(95, 127, 98, 0.09) 72% 78%,
+        transparent 78% 100%
+      );
+    opacity: 0.5;
   }
 }

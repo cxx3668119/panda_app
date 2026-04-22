@@ -3,8 +3,8 @@ from app.schemas.daily_fortune import DailyFortuneResponse
 
 
 class DailyFortuneService:
-    def __init__(self) -> None:
-        self.repository = DailyFortuneRepository()
+    def __init__(self, repository: DailyFortuneRepository) -> None:
+        self.repository = repository
 
     def get_today(self) -> DailyFortuneResponse:
         return DailyFortuneResponse(**self.repository.get_today())

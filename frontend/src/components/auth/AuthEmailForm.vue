@@ -1,8 +1,11 @@
 <template>
-  <div class="surface-card space-y-5">
-    <div class="space-y-2">
-      <div class="eyebrow">Welcome back</div>
-      <h3 class="section-title">邮箱验证码登录</h3>
+  <div class="surface-card panda-panel space-y-5">
+    <div class="flex items-start justify-between gap-3">
+      <div class="space-y-2">
+        <div class="eyebrow">Welcome back</div>
+        <h3 class="section-title">邮箱验证码登录</h3>
+      </div>
+      <img alt="熊猫徽章" class="h-12 w-12 rounded-2xl border border-line/70 bg-white/85 p-2 shadow-soft" src="/panda-badge.svg" />
     </div>
 
     <div class="grid gap-4">

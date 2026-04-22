@@ -4,8 +4,8 @@ from app.schemas.profile import InterpretationResponse, ProfileResponse, Profile
 
 
 class ProfileService:
-    def __init__(self) -> None:
-        self.repository = ProfileRepository()
+    def __init__(self, repository: ProfileRepository) -> None:
+        self.repository = repository
 
     def get_current_profile(self) -> ProfileResponse | None:
         profile = self.repository.get_profile()

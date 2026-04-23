@@ -23,8 +23,8 @@
 
 <script setup lang="ts">
 const items = [
-  { label: "首页", to: "/daily", icon: "/panda-badge.svg" },
-  { label: "成长档案", to: "/growth/archive", icon: "/panda-badge.svg" },
-  { label: "设置", to: "/settings/reminder", icon: "/panda-badge.svg" },
-];
+  { label: '首页', to: '/daily', icon: '/panda-badge.svg' },
+  { label: '成长档案', to: '/growth/archive', icon: '/panda-badge.svg' },
+  { label: '我的', to: '/me', icon: '/panda-badge.svg' }
+]
 </script>

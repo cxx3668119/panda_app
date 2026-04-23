@@ -78,4 +78,16 @@ export function post<T>(path: string, body?: unknown) {
   return client.post<any, T>(path, body)
 }
 
+export function patch<T>(path: string, body?: unknown) {
+  return client.patch<any, T>(path, body)
+}
+
+export function postForm<T>(path: string, body: FormData) {
+  return client.post<any, T>(path, body, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
 export { TOKEN_STORAGE_KEY, USER_STORAGE_KEY, clearAuthStorage, getAuthToken }

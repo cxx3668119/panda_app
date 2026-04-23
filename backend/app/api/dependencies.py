@@ -1,13 +1,17 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
+from app.core.security import get_current_user
 from app.db.session import get_db
+from app.models.app_user import AppUser
+from app.repositories.account_repository import AccountRepository
 from app.repositories.auth_repository import AuthRepository
 from app.repositories.chat_repository import ChatRepository
 from app.repositories.daily_fortune_repository import DailyFortuneRepository
 from app.repositories.growth_repository import GrowthRepository
 from app.repositories.profile_repository import ProfileRepository
 from app.repositories.reminder_repository import ReminderRepository
+from app.services.account_service import AccountService
 from app.services.auth_service import AuthService
 from app.services.chat_service import ChatService
 from app.services.daily_fortune_service import DailyFortuneService
@@ -18,6 +22,13 @@ from app.services.reminder_service import ReminderService
 
 def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
     return AuthService(AuthRepository(db))
+
+
+def get_account_service(
+    db: Session = Depends(get_db),
+    user: AppUser = Depends(get_current_user),
+) -> AccountService:
+    return AccountService(AccountRepository(db, user))
 
 
 def get_profile_service(db: Session = Depends(get_db)) -> ProfileService:

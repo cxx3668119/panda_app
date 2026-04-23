@@ -1,12 +1,25 @@
-export interface LoginUser {
+export interface UserAccount {
+  id: number
   email: string
   nickname: string
+  mobile: string | null
+  timezone: string
+  avatarUrl: string | null
+  status: string
 }
 
 export interface LoginResponse {
   token: string
-  user: LoginUser
+  user: UserAccount
   hasProfile: boolean
+}
+
+export interface RegisterPayload {
+  nickname: string
+  email: string
+  password: string
+  timezone: string
+  mobile: string | null
 }
 
 export interface UserProfile {
@@ -68,4 +81,16 @@ export interface ReminderSettings {
   channel: 'IN_APP'
   time: string
   timezone: string
+}
+
+export interface AccountUpdatePayload {
+  nickname: string
+  email: string
+  mobile: string | null
+  timezone: string
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string
+  newPassword: string
 }

@@ -1,13 +1,19 @@
 from app.repositories.auth_repository import AuthRepository
-from app.schemas.auth import EmailLoginRequest, LoginResponse, SendEmailCodeRequest
+from app.schemas.auth import LoginRequest, LoginResponse, RegisterRequest
 
 
 class AuthService:
     def __init__(self, repository: AuthRepository) -> None:
         self.repository = repository
 
-    def send_email_code(self, payload: SendEmailCodeRequest) -> dict:
-        return self.repository.send_code(str(payload.email))
+    def login(self, payload: LoginRequest) -> LoginResponse:
+        return self.repository.login(str(payload.email), payload.password)
 
-    def login_by_email(self, payload: EmailLoginRequest) -> LoginResponse:
-        return self.repository.login(str(payload.email))
+    def register(self, payload: RegisterRequest) -> LoginResponse:
+        return self.repository.register(
+            nickname=payload.nickname,
+            email=str(payload.email),
+            password=payload.password,
+            timezone=payload.timezone,
+            mobile=payload.mobile,
+        )

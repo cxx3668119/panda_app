@@ -38,8 +38,24 @@ const router = createRouter({
       component: () => import('@/pages/growth/archive/index.vue')
     },
     {
+      path: '/me',
+      component: () => import('@/pages/me/index.vue')
+    },
+    {
+      path: '/me/account',
+      component: () => import('@/pages/me/account/index.vue')
+    },
+    {
+      path: '/me/password',
+      component: () => import('@/pages/me/password/index.vue')
+    },
+    {
+      path: '/me/settings/reminder',
+      component: () => import('@/pages/me/settings/reminder/index.vue')
+    },
+    {
       path: '/settings/reminder',
-      component: () => import('@/pages/settings/reminder/index.vue')
+      redirect: '/me/settings/reminder'
     }
   ]
 })

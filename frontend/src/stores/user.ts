@@ -1,14 +1,15 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { clearAuthStorage, TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from '@/api/client'
-import { loginByEmail } from '@/api/auth'
-import type { LoginUser } from '@/types'
+import { fetchMe, updateMe as updateMeRequest, uploadAvatar as uploadAvatarRequest } from '@/api/account'
+import { changePassword, login as loginRequest, register as registerRequest } from '@/api/auth'
+import type { AccountUpdatePayload, RegisterPayload, UserAccount } from '@/types'
 
-function readStoredUser(): LoginUser | null {
+function readStoredUser(): UserAccount | null {
   const raw = localStorage.getItem(USER_STORAGE_KEY)
   if (!raw) return null
   try {
-    return JSON.parse(raw) as LoginUser
+    return JSON.parse(raw) as UserAccount
   } catch {
     localStorage.removeItem(USER_STORAGE_KEY)
     return null
@@ -18,33 +19,73 @@ function readStoredUser(): LoginUser | null {
 export const useUserStore = defineStore('user', () => {
   const storedUser = readStoredUser()
   const token = ref(localStorage.getItem(TOKEN_STORAGE_KEY) || '')
-  const email = ref(storedUser?.email || '')
-  const nickname = ref(storedUser?.nickname || '')
+  const user = ref<UserAccount | null>(storedUser)
   const isLoggedIn = computed(() => !!token.value)
 
-  async function login(emailValue: string, code: string) {
-    const result = await loginByEmail({ email: emailValue, code })
+  async function login(email: string, password: string) {
+    const result = await loginRequest({ email, password })
     token.value = result.token
-    email.value = result.user.email
-    nickname.value = result.user.nickname
-    localStorage.setItem(TOKEN_STORAGE_KEY, result.token)
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(result.user))
+    user.value = result.user
+    persist(result.token, result.user)
     return result
+  }
+
+  async function register(payload: RegisterPayload) {
+    const result = await registerRequest(payload)
+    token.value = result.token
+    user.value = result.user
+    persist(result.token, result.user)
+    return result
+  }
+
+  async function loadMe() {
+    if (!token.value) return null
+    user.value = await fetchMe()
+    persist(token.value, user.value)
+    return user.value
+  }
+
+  async function updateMe(payload: AccountUpdatePayload) {
+    user.value = await updateMeRequest(payload)
+    persist(token.value, user.value)
+    return user.value
+  }
+
+  async function uploadAvatar(file: File) {
+    user.value = await uploadAvatarRequest(file)
+    persist(token.value, user.value)
+    return user.value
+  }
+
+  async function updatePassword(currentPassword: string, newPassword: string) {
+    await changePassword({ currentPassword, newPassword })
   }
 
   function logout() {
     token.value = ''
-    email.value = ''
-    nickname.value = ''
+    user.value = null
     clearAuthStorage()
+  }
+
+  function persist(nextToken: string, nextUser: UserAccount | null) {
+    if (!nextToken || !nextUser) {
+      clearAuthStorage()
+      return
+    }
+    localStorage.setItem(TOKEN_STORAGE_KEY, nextToken)
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(nextUser))
   }
 
   return {
     token,
-    email,
-    nickname,
+    user,
     isLoggedIn,
     login,
+    register,
+    loadMe,
+    updateMe,
+    uploadAvatar,
+    updatePassword,
     logout
   }
 })

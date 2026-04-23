@@ -1,8 +1,12 @@
+from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
+from app.api.v1.account import router as account_router
 from app.api.v1.ai_chat import router as ai_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.daily_fortune import router as daily_fortune_router
@@ -21,6 +25,9 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
+Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)
+app.mount('/uploads', StaticFiles(directory=settings.upload_dir), name='uploads')
 
 
 @app.exception_handler(BusinessError)
@@ -61,6 +68,7 @@ def health_check() -> dict:
 
 
 app.include_router(auth_router, prefix=settings.api_prefix)
+app.include_router(account_router, prefix=settings.api_prefix)
 app.include_router(profile_router, prefix=settings.api_prefix)
 app.include_router(daily_fortune_router, prefix=settings.api_prefix)
 app.include_router(ai_router, prefix=settings.api_prefix)

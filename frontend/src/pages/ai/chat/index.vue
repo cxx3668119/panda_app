@@ -2,7 +2,7 @@
   <main class="page-shell" v-if="quota">
     <section class="page-hero panda-panel rounded-[32px] border border-line/70 bg-panel/72 p-5 sm:p-6">
       <div class="flex items-center gap-3">
-        <img alt="熊猫问答徽章" class="h-12 w-12 rounded-2xl border border-line/70 bg-white/80 p-2 shadow-soft" src="/panda-badge.svg" />
+        <img alt="熊猫问答徽章" class="h-12 w-12 rounded-2xl border border-line/70 bg-white/80 p-2 shadow-soft" src="/panda-badge.png" />
         <div>
           <div class="eyebrow">Panda guide</div>
           <h1 class="page-title text-[2.25rem] sm:text-5xl">AI 问答</h1>

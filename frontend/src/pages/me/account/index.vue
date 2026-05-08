@@ -9,7 +9,7 @@
     <section class="surface-card space-y-6">
       <div class="flex items-center gap-4 rounded-[24px] border border-line/70 bg-white/70 p-4">
         <img
-          :src="userStore.user?.avatarUrl || '/panda-badge.svg'"
+          :src="userStore.user?.avatarUrl || '/panda-badge.png'"
           alt="头像预览"
           class="h-20 w-20 rounded-[28px] border border-line/70 bg-white/85 object-cover p-1 shadow-soft"
         />

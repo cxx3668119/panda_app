@@ -87,7 +87,7 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const user = computed(() => userStore.user)
-const avatarSrc = computed(() => user.value?.avatarUrl || '/panda-badge.svg')
+const avatarSrc = computed(() => user.value?.avatarUrl || '/panda-badge.png')
 const statusText = computed(() => (user.value?.status === 'active' ? '账号正常' : user.value?.status || '未知状态'))
 
 onMounted(async () => {

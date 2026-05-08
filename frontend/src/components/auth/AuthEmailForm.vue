@@ -5,7 +5,7 @@
         <div class="eyebrow">{{ mode === 'login' ? 'Welcome back' : 'Create account' }}</div>
         <h3 class="section-title">{{ mode === 'login' ? '账号密码登录' : '注册账号' }}</h3>
       </div>
-      <img alt="熊猫徽章" class="h-12 w-12 rounded-2xl border border-line/70 bg-white/85 p-2 shadow-soft" src="/panda-badge.svg" />
+      <img alt="熊猫徽章" class="h-12 w-12 rounded-2xl border border-line/70 bg-white/85 p-2 shadow-soft" src="/panda-badge.png" />
     </div>
 
     <div class="grid gap-4">

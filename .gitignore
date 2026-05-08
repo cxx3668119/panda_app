@@ -3,4 +3,7 @@ frontend/dist
 backend/.venv
 __pycache__
 backend/.env*
+.env
+!.env.example
+!backend/.env.example
 /docs/

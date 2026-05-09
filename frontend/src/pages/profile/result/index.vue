@@ -3,7 +3,7 @@
     <InterpretationSummaryCard :title="interpretation.summaryTitle" :description="interpretation.advice" />
 
     <div class="mt-6 flex flex-wrap gap-3">
-      <RouterLink class="btn-secondary" to="/daily">查看今日日运</RouterLink>
+      <RouterLink class="btn-secondary" to="/daily">查看今日运势</RouterLink>
       <RouterLink class="btn-ghost" to="/profile/create">修改出生信息</RouterLink>
       <RouterLink class="btn-primary" :to="profile.birthTimeUnknown ? '/profile/create' : '/ai/chat'">
         {{ profile.birthTimeUnknown ? '补充时辰后提问' : '去 AI 提问' }}

@@ -8,6 +8,18 @@ export interface UserAccount {
   status: string
 }
 
+export interface UserRecord {
+  id: number
+  name: string
+  birthday: string
+  gender: string
+  birthZodiacSign: string
+  birthplace: string
+  age: number
+  zodiac: string
+  horoscope: string
+}
+
 export interface LoginResponse {
   token: string
   user: UserAccount

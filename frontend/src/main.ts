@@ -2,8 +2,9 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
+import Vant from 'vant';
+import 'vant/lib/index.css';
 import './styles.css'
-import { Form, Field, CellGroup } from 'vant';
 
 const app = createApp(App)
 
@@ -11,8 +12,8 @@ app.use(createPinia())
 app.use(router)
 
 // VantUi 注入
-app.use(Form);
-app.use(Field);
-app.use(CellGroup);
+app.use(Vant);
 
+// Lazyload 指令需要单独进行注册
+// app.use(vant.Lazyload);
 app.mount('#app')

@@ -10,6 +10,18 @@
     font-weight: 400;
     color: #161715;
     background: #f3f1ea;
+    --van-primary-color: #5f7f62;
+    --van-button-primary-background: #5f7f62;
+    --van-button-primary-border-color: #5f7f62;
+    --van-radio-checked-icon-color: #5f7f62;
+    --van-checkbox-checked-icon-color: #5f7f62;
+    --van-field-label-color: #667067;
+    --van-dialog-confirm-button-text-color: #5f7f62;
+    --van-picker-confirm-action-color: #5f7f62;
+    --van-picker-option-text-color: #161715;
+    --van-picker-loading-icon-color: #5f7f62;
+    --van-calendar-range-edge-background: #5f7f62;
+    --van-calendar-range-middle-color: #5f7f62;
   }
 
   * {

@@ -10,11 +10,9 @@ from app.core.config import settings
 from app.core.passwords import hash_password
 from app.models.app_user import AppUser
 from app.models.bazi_profile import BaziProfile
-from app.repositories.account_repository import ensure_account_columns
 
 
 def get_or_create_demo_user(db: Session) -> AppUser:
-    ensure_account_columns(db)
     user = db.scalar(select(AppUser).where(AppUser.user_no == settings.demo_user_no))
     if user:
         changed = False

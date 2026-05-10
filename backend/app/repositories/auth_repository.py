@@ -10,7 +10,6 @@ from app.core.exceptions import BusinessError
 from app.core.passwords import hash_password, verify_password
 from app.core.tokens import generate_session_token
 from app.models.app_user import AppUser
-from app.repositories.account_repository import ensure_account_columns
 from app.repositories.db_support import get_active_profile, get_or_create_demo_user
 from app.schemas.auth import LoginResponse, LoginUser
 
@@ -18,7 +17,6 @@ from app.schemas.auth import LoginResponse, LoginUser
 class AuthRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
-        ensure_account_columns(self.db)
 
     def login(self, email: str, password: str) -> LoginResponse:
         self._ensure_demo_user_account()

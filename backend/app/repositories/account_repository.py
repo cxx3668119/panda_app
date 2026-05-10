@@ -1,31 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from pathlib import Path
 
-from sqlalchemy import or_, select, text
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.exceptions import BusinessError
 from app.core.passwords import hash_password, verify_password
 from app.models.app_user import AppUser
-
-
-def ensure_account_columns(db: Session) -> None:
-    statements = [
-        'ALTER TABLE app_user ADD COLUMN email VARCHAR(128) NULL',
-        'ALTER TABLE app_user ADD COLUMN password_hash TEXT NULL',
-        'ALTER TABLE app_user ADD COLUMN avatar_url VARCHAR(255) NULL',
-        'ALTER TABLE app_user ADD COLUMN session_token VARCHAR(128) NULL',
-        'ALTER TABLE app_user ADD COLUMN password_updated_at DATETIME NULL',
-    ]
-    for statement in statements:
-        try:
-            db.execute(text(statement))
-            db.commit()
-        except Exception:
-            db.rollback()
 
 
 class AccountRepository:

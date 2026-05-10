@@ -9,5 +9,9 @@ class ReminderService:
     def get_settings(self) -> ReminderSettingsResponse:
         return ReminderSettingsResponse(**self.repository.get_settings())
 
-    def save_settings(self, payload: ReminderSettingsUpdateRequest) -> ReminderSettingsResponse:
-        return ReminderSettingsResponse(**self.repository.save_settings(payload.model_dump()))
+    def save_settings(
+        self, payload: ReminderSettingsUpdateRequest
+    ) -> ReminderSettingsResponse:
+        return ReminderSettingsResponse(
+            **self.repository.save_settings(payload.model_dump())
+        )

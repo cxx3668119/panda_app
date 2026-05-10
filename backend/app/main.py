@@ -13,6 +13,8 @@ from app.api.v1.daily_fortune import router as daily_fortune_router
 from app.api.v1.growth_archive import router as growth_archive_router
 from app.api.v1.profile import router as profile_router
 from app.api.v1.reminder import router as reminder_router
+from app.api.v1.user_record import router as user_record_router
+
 from app.core.config import settings
 from app.core.exceptions import BusinessError
 
@@ -74,3 +76,4 @@ app.include_router(daily_fortune_router, prefix=settings.api_prefix)
 app.include_router(ai_router, prefix=settings.api_prefix)
 app.include_router(growth_archive_router, prefix=settings.api_prefix)
 app.include_router(reminder_router, prefix=settings.api_prefix)
+app.include_router(user_record_router, prefix=settings.api_prefix)

@@ -6,6 +6,7 @@ from app.models.daily_fortune import DailyFortune
 from app.models.growth_archive_event import GrowthArchiveEvent
 from app.models.natal_reading import NatalReading
 from app.models.reminder_setting import ReminderSetting
+from app.models.user_record import UserRecord
 
 __all__ = [
     'AiChatMessage',
@@ -16,4 +17,5 @@ __all__ = [
     'GrowthArchiveEvent',
     'NatalReading',
     'ReminderSetting',
+    'UserRecord',
 ]

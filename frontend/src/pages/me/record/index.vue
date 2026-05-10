@@ -324,7 +324,9 @@ const handleClick = throttle(
   1000,
   { leading: true, trailing: false },
 );
-async function onSubmit() {}
+async function onSubmit() {
+  console.log(newRecord.value);
+}
 
 async function beforeDialogClose(action: string) {
   if (action === "cancel") {

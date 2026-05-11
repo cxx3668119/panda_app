@@ -64,6 +64,7 @@ class AuthRepository:
                 timezone=user.timezone,
                 avatarUrl=user.avatar_url,
                 status=user.status,
+                boundRecordId=user.bound_record_id,
             ),
             hasProfile=has_profile,
         )

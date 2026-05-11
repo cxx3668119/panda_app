@@ -80,3 +80,7 @@ class ChangePasswordRequest(BaseModel):
         if len(password) < 6:
             raise ValueError('密码长度不能少于6位')
         return password
+
+
+class SetCurrentRecordRequest(BaseModel):
+    recordId: int

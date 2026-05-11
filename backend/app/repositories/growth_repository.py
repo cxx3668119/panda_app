@@ -14,8 +14,7 @@ class GrowthRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_archive(self) -> dict:
-        user = get_or_create_demo_user(self.db)
+    def get_archive(self, user: AppUser) -> dict:
         events = self.db.scalars(
             select(GrowthArchiveEvent)
             .where(GrowthArchiveEvent.user_id == user.id, GrowthArchiveEvent.is_deleted.is_(False))

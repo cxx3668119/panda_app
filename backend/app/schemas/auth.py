@@ -64,6 +64,7 @@ class LoginUser(BaseModel):
     timezone: str
     avatarUrl: str | None = None
     status: str
+    boundRecordId: int | None = None
 
 
 class LoginResponse(BaseModel):

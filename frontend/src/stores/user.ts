@@ -11,6 +11,7 @@ import {
   uploadAvatar as uploadAvatarRequest,
 } from "@/api/account";
 import {
+  setRecord,
   changePassword,
   login as loginRequest,
   register as registerRequest,
@@ -100,6 +101,13 @@ export const useUserStore = defineStore("user", () => {
     return userRecords.value;
   }
 
+  async function setCurrentRecord(recordId: number | string) {
+    if (user.value) {
+      await setRecord({ recordId });
+      user.value.boundRecordId = recordId;
+    }
+  }
+
   return {
     token,
     user,
@@ -113,5 +121,6 @@ export const useUserStore = defineStore("user", () => {
     updatePassword,
     logout,
     getUserRecords,
+    setCurrentRecord,
   };
 });

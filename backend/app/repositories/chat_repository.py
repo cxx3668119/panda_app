@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+from app.models.app_user import AppUser
 
 from app.core.config import settings
 from app.models.ai_chat_message import AiChatMessage
@@ -17,8 +18,7 @@ class ChatRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_quota(self) -> dict:
-        user = get_or_create_demo_user(self.db)
+    def get_quota(self, user: AppUser) -> dict:
         profile = get_active_profile(self.db, user.id)
         if not profile:
             return {
@@ -39,8 +39,7 @@ class ChatRepository:
             'paidBalance': 0,
         }
 
-    def get_messages(self) -> list[dict]:
-        user = get_or_create_demo_user(self.db)
+    def get_messages(self, user: AppUser) -> list[dict]:
         profile = get_active_profile(self.db, user.id)
         if not profile:
             return []
@@ -52,8 +51,7 @@ class ChatRepository:
         ).all()
         return [self._to_response(item) for item in messages]
 
-    def append_message(self, payload: dict) -> dict:
-        user = get_or_create_demo_user(self.db)
+    def append_message(self, payload: dict, user: AppUser) -> dict:
         profile = get_active_profile(self.db, user.id)
         if not profile:
             raise ValueError('profile missing')
@@ -83,8 +81,7 @@ class ChatRepository:
     def rollback(self) -> None:
         self.db.rollback()
 
-    def get_today_profile(self):
-        user = get_or_create_demo_user(self.db)
+    def get_today_profile(self, user: AppUser):
         return get_active_profile(self.db, user.id)
 
     def _get_or_create_today_session(self, user_id: int, profile_id: int) -> AiChatSession:

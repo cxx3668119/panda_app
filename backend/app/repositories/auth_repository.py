@@ -22,31 +22,38 @@ class AuthRepository:
         self._ensure_demo_user_account()
         user = self.db.scalar(select(AppUser).where(AppUser.email == email))
         if not user or not verify_password(password, user.password_hash):
-            raise BusinessError('邮箱或密码错误', status_code=401)
+            raise BusinessError("邮箱或密码错误", status_code=401)
         user.session_token = generate_session_token()
         profile = get_active_profile(self.db, user.id)
         self.db.commit()
         self.db.refresh(user)
         return self._build_login_response(user, profile is not None)
 
-    def register(self, nickname: str, email: str, password: str, timezone: str, mobile: str | None) -> LoginResponse:
+    def register(
+        self,
+        nickname: str,
+        email: str,
+        password: str,
+        timezone: str,
+        mobile: str | None,
+    ) -> LoginResponse:
         self._ensure_demo_user_account()
         conditions = [AppUser.email == email]
         if mobile:
             conditions.append(AppUser.mobile == mobile)
         conflict = self.db.scalar(select(AppUser).where(or_(*conditions)))
         if conflict:
-            raise BusinessError('邮箱或手机号已被其他账号使用', status_code=400)
+            raise BusinessError("邮箱或手机号已被其他账号使用", status_code=400)
         user = AppUser(
-            user_no=f'user-{uuid4().hex[:12]}',
-            login_type='mobile',
+            user_no=f"user-{uuid4().hex[:12]}",
+            login_type="mobile",
             nickname=nickname,
             email=email,
             mobile=mobile,
             password_hash=hash_password(password),
             session_token=generate_session_token(),
             timezone=timezone,
-            status='active',
+            status="active",
         )
         self.db.add(user)
         self.db.commit()
@@ -55,7 +62,7 @@ class AuthRepository:
 
     def _build_login_response(self, user: AppUser, has_profile: bool) -> LoginResponse:
         return LoginResponse(
-            token=user.session_token or '',
+            token=user.session_token or "",
             user=LoginUser(
                 id=user.id,
                 email=user.email or settings.demo_email,
@@ -64,13 +71,15 @@ class AuthRepository:
                 timezone=user.timezone,
                 avatarUrl=user.avatar_url,
                 status=user.status,
-                boundRecordId=user.bound_record_id,
+                boundRecordId=user.bound_record_id or None,
             ),
             hasProfile=has_profile,
         )
 
-    def _ensure_demo_user_account(self) -> None:
-        user = get_or_create_demo_user(self.db)
+    def _ensure_demo_user_account(
+        self,
+        user: AppUser,
+    ) -> None:
         changed = False
         if not user.email:
             user.email = settings.demo_email

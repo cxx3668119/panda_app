@@ -5,16 +5,18 @@ import json
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.models.app_user import AppUser
 from app.models.daily_fortune import DailyFortune
-from app.repositories.db_support import get_active_profile, get_or_create_demo_user, today_local
+from app.repositories.db_support import get_active_profile, today_local
 
 
 class DailyFortuneRepository:
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: Session, user: AppUser) -> None:
         self.db = db
+        self.user = user
 
     def get_today(self) -> dict:
-        user = get_or_create_demo_user(self.db)
+        user = self.user
         profile = get_active_profile(self.db, user.id)
         fortune = self.db.scalar(
             select(DailyFortune)
@@ -42,7 +44,7 @@ class DailyFortuneRepository:
         }
 
     def get_history(self) -> list[dict]:
-        user = get_or_create_demo_user(self.db)
+        user = self.user
         profile = get_active_profile(self.db, user.id)
         if not profile:
             return []

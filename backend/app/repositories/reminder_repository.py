@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from app.models.app_user import AppUser
 
 from app.core.enums import ReminderChannel
 from app.models.reminder_setting import ReminderSetting
@@ -12,8 +13,7 @@ class ReminderRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_settings(self) -> dict:
-        user = get_or_create_demo_user(self.db)
+    def get_settings(self, user: AppUser) -> dict:
         setting = self.db.scalar(
             select(ReminderSetting)
             .where(ReminderSetting.user_id == user.id, ReminderSetting.channel_type == 'in_app')
@@ -29,8 +29,7 @@ class ReminderRepository:
             }
         return self._to_response(setting)
 
-    def save_settings(self, payload: dict) -> dict:
-        user = get_or_create_demo_user(self.db)
+    def save_settings(self, payload: dict, user: AppUser) -> dict:
         setting = self.db.scalar(
             select(ReminderSetting)
             .where(ReminderSetting.user_id == user.id, ReminderSetting.channel_type == 'in_app')

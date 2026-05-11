@@ -20,3 +20,7 @@ export async function fetchCurrentProfile() {
 export async function changePassword(payload: ChangePasswordPayload) {
   return post<{ success: true }>('/account/change-password', payload)
 }
+
+export async function setRecord(payload: { recordId: number | string }) {
+  return post<{ success: true }>('/account/set-current-record', payload)
+}

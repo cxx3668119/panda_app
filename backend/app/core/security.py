@@ -9,13 +9,15 @@ from app.models.app_user import AppUser
 from app.repositories.db_support import get_or_create_demo_user
 
 
-async def get_current_token(authorization: str | None = Header(default=None), db: Session = Depends(get_db)) -> str:
+async def get_current_token(
+    authorization: str | None = Header(default=None), db: Session = Depends(get_db)
+) -> str:
     if not authorization:
-        raise BusinessError('登录状态已失效，请重新登录', status_code=401)
-    prefix = 'Bearer '
+        raise BusinessError("登录状态已失效，请重新登录", status_code=401)
+    prefix = "Bearer "
     if not authorization.startswith(prefix):
-        raise BusinessError('登录状态已失效，请重新登录', status_code=401)
-    token = authorization[len(prefix):]
+        raise BusinessError("登录状态已失效，请重新登录", status_code=401)
+    token = authorization[len(prefix) :]
     if token == settings.mock_token:
         user = get_or_create_demo_user(db)
         if user.session_token != settings.mock_token:
@@ -24,13 +26,15 @@ async def get_current_token(authorization: str | None = Header(default=None), db
         return token
     user = db.scalar(select(AppUser).where(AppUser.session_token == token))
     if not user:
-        raise BusinessError('登录状态已失效，请重新登录', status_code=401)
+        raise BusinessError("登录状态已失效，请重新登录", status_code=401)
     return token
 
 
-async def get_current_user(authorization: str | None = Header(default=None), db: Session = Depends(get_db)) -> AppUser:
+async def get_current_user(
+    authorization: str | None = Header(default=None), db: Session = Depends(get_db)
+) -> AppUser:
     await get_current_token(authorization, db)
-    token = authorization[len('Bearer '):]
+    token = authorization[len("Bearer ") :]
     user = db.scalar(select(AppUser).where(AppUser.session_token == token))
     if user:
         return user

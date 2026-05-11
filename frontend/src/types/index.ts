@@ -6,6 +6,7 @@ export interface UserAccount {
   timezone: string
   avatarUrl: string | null
   status: string
+  boundRecordId?: number | string
 }
 
 export interface UserRecord {

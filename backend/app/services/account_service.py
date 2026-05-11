@@ -1,5 +1,9 @@
 from app.repositories.account_repository import AccountRepository
-from app.schemas.account import AccountInfoResponse, AccountUpdateRequest, ChangePasswordRequest
+from app.schemas.account import (
+    AccountInfoResponse,
+    AccountUpdateRequest,
+    ChangePasswordRequest,
+)
 
 
 class AccountService:
@@ -17,3 +21,6 @@ class AccountService:
 
     def upload_avatar(self, filename: str) -> AccountInfoResponse:
         return AccountInfoResponse(**self.repository.save_avatar(filename))
+
+    def set_bound_record(self, payload: str | int):
+        return AccountInfoResponse(**self.repository.set_bound_record(payload.recordId))

@@ -123,7 +123,7 @@
             name="birthplace"
             label="地区"
             placeholder="点击选择省市区"
-            :rules="[{ required: true, message: '请选择地区' }]"
+            :rules="[{ required: false, message: '请选择地区' }]"
             @click="showArea = true"
           />
         </van-cell-group>

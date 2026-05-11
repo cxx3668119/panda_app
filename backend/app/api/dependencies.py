@@ -37,8 +37,11 @@ def get_profile_service(db: Session = Depends(get_db)) -> ProfileService:
     return ProfileService(ProfileRepository(db))
 
 
-def get_daily_fortune_service(db: Session = Depends(get_db)) -> DailyFortuneService:
-    return DailyFortuneService(DailyFortuneRepository(db))
+def get_daily_fortune_service(
+    db: Session = Depends(get_db),
+    user: AppUser = Depends(get_current_user),
+) -> DailyFortuneService:
+    return DailyFortuneService(DailyFortuneRepository(db,user))
 
 
 def get_chat_service(db: Session = Depends(get_db)) -> ChatService:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from app.models.app_user import AppUser
 
 from datetime import datetime
 from uuid import uuid4
@@ -17,15 +18,13 @@ class ProfileRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_profile(self) -> dict | None:
-        user = get_or_create_demo_user(self.db)
+    def get_profile(self, user: AppUser) -> dict | None:
         profile = get_active_profile(self.db, user.id)
         if not profile:
             return None
         return self._to_profile_response(profile)
 
-    def save_profile(self, payload: dict) -> dict:
-        user = get_or_create_demo_user(self.db)
+    def save_profile(self, payload: dict, user: AppUser) -> dict:
         profile = get_active_profile(self.db, user.id)
         birth_time = payload.get('birthTime') if not payload['birthTimeUnknown'] else None
         birth_date = datetime.strptime(payload['birthDate'], '%Y-%m-%d').date()
@@ -58,8 +57,7 @@ class ProfileRepository:
         self.db.refresh(profile)
         return self._to_profile_response(profile)
 
-    def get_interpretation(self) -> dict:
-        user = get_or_create_demo_user(self.db)
+    def get_interpretation(self, user: AppUser) -> dict:
         profile = get_active_profile(self.db, user.id)
         if not profile:
             return {

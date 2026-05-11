@@ -15,6 +15,7 @@ import {
   login as loginRequest,
   register as registerRequest,
 } from "@/api/auth";
+import { getRecordList } from "@/api/record";
 import type {
   AccountUpdatePayload,
   RegisterPayload,
@@ -33,43 +34,11 @@ function readStoredUser(): UserAccount | null {
   }
 }
 
-function readStoredUserRecord(): UserRecord[] {
-  const raw = [
-    {
-      name: "Zhang San",
-      birthday: "1990-01-01 00:00:00",
-      gender: "male",
-      birthZodiacSign: "Capricorn",
-      birthplace: "Beijing",
-      age: 34,
-      zodiac: "Rat",
-      id: 1,
-      horoscope:"zxc"
-    },
-    {
-      name: "Zhang San",
-      birthday: "1990-01-01 00:00:00",
-      gender: "male",
-      birthZodiacSign: "Capricorn",
-      birthplace: "Beijing",
-      age: 34,
-      zodiac: "Rat",
-      id: 2,
-      horoscope:"zxc"
-    },
-  ];
-  try {
-    return raw as UserRecord[];
-  } catch {
-    return [];
-  }
-}
-
 export const useUserStore = defineStore("user", () => {
   const storedUser = readStoredUser();
   const token = ref(localStorage.getItem(TOKEN_STORAGE_KEY) || "");
   const user = ref<UserAccount | null>(storedUser);
-  const userRecords = ref<UserRecord[]>(readStoredUserRecord());
+  const userRecords = ref<UserRecord[]>([]);
   const isLoggedIn = computed(() => !!token.value);
 
   async function login(email: string, password: string) {
@@ -126,6 +95,11 @@ export const useUserStore = defineStore("user", () => {
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(nextUser));
   }
 
+  async function getUserRecords() {
+    userRecords.value = await getRecordList();
+    return userRecords.value;
+  }
+
   return {
     token,
     user,
@@ -138,5 +112,6 @@ export const useUserStore = defineStore("user", () => {
     uploadAvatar,
     updatePassword,
     logout,
+    getUserRecords,
   };
 });

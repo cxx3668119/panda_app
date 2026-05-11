@@ -1,7 +1,8 @@
-from app.repositories.user_record_repository import UserRecordRepository
-from app.schemas.user_record import UserRecordCreateRequest, UserRecordResponse
+﻿from app.repositories.user_record_repository import UserRecordRepository
+from app.schemas.user_record import UserRecordCreateRequest, UserRecordResponse, UserRecordUpdateRequest
 from sqlalchemy.orm import Session
 from datetime import datetime
+from app.core.exceptions import BusinessError
 
 
 class UserRecordService:
@@ -10,12 +11,10 @@ class UserRecordService:
         self.user_id = user_id
 
     def create_record(self, payload: UserRecordCreateRequest) -> UserRecordResponse:
-        age = self._calculate_age(payload.birthday)  # 年龄
-        zodiac = self._calculate_zodiac(payload.birthday)  # 生肖
-        horoscope = self._calculate_horoscope(payload.birthday)  # 星座
-        birth_zodiac_sign = self._calculate_birth_zodiac_sign(
-            payload.birthday
-        )  # 生辰八字
+        age = self._calculate_age(payload.birthday)
+        zodiac = self._calculate_zodiac(payload.birthday)
+        horoscope = self._calculate_horoscope(payload.birthday)
+        birth_zodiac_sign = self._calculate_birth_zodiac_sign(payload.birthday)
 
         record = self.repository.create(
             user_id=self.user_id,
@@ -29,6 +28,38 @@ class UserRecordService:
             birth_zodiac_sign=birth_zodiac_sign,
         )
         return self._to_response(record)
+
+    def update_record(self, payload: UserRecordUpdateRequest) -> UserRecordResponse:
+        record = self.repository.get_by_user(self.user_id, payload.id)
+        if not record:
+            raise BusinessError("档案不存在", status_code=404)
+
+        age = self._calculate_age(payload.birthday)
+        zodiac = self._calculate_zodiac(payload.birthday)
+        horoscope = self._calculate_horoscope(payload.birthday)
+        birth_zodiac_sign = self._calculate_birth_zodiac_sign(payload.birthday)
+
+        updated = self.repository.update(
+            record,
+            name=payload.name,
+            birthday=payload.birthday,
+            gender=payload.gender,
+            birthplace=payload.birthplace,
+            age=age,
+            zodiac=zodiac,
+            horoscope=horoscope,
+            birth_zodiac_sign=birth_zodiac_sign,
+        )
+        return self._to_response(updated)
+
+    def list_records(self) -> list[UserRecordResponse]:
+        records = self.repository.list_by_user(self.user_id)
+        return [self._to_response(record) for record in records]
+
+    def delete_record(self, record_id: int) -> None:
+        deleted = self.repository.delete(self.user_id, record_id)
+        if not deleted:
+            raise BusinessError("档案不存在", status_code=404)
 
     def _to_response(self, record) -> UserRecordResponse:
         return UserRecordResponse(
@@ -45,56 +76,39 @@ class UserRecordService:
 
     def _calculate_age(self, birthday: datetime) -> int:
         today = datetime.today()
-        age = (
+        return (
             today.year
             - birthday.year
             - ((today.month, today.day) < (birthday.month, birthday.day))
         )
-        return age
 
     def _calculate_zodiac(self, birthday: datetime) -> str:
-        animals = [
-            "猴",
-            "鸡",
-            "狗",
-            "猪",
-            "鼠",
-            "牛",
-            "虎",
-            "兔",
-            "龙",
-            "蛇",
-            "马",
-            "羊",
-        ]
+        animals = ["猴", "鸡", "狗", "猪", "鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊"]
         return animals[birthday.year % 12]
 
     def _calculate_horoscope(self, birthday: datetime) -> str:
         month = birthday.month
         day = birthday.day
         signs = [
-            ("摩羯座", (1, 20)),
-            ("水瓶座", (2, 19)),
-            ("双鱼座", (3, 21)),
-            ("白羊座", (4, 20)),
-            ("金牛座", (5, 21)),
-            ("双子座", (6, 22)),
-            ("巨蟹座", (7, 23)),
-            ("狮子座", (8, 23)),
-            ("处女座", (9, 23)),
-            ("天秤座", (10, 24)),
-            ("天蝎座", (11, 23)),
-            ("射手座", (12, 22)),
-            ("摩羯座", (12, 32)),
+            ("水瓶座", (1, 20)),
+            ("双鱼座", (2, 19)),
+            ("白羊座", (3, 21)),
+            ("金牛座", (4, 20)),
+            ("双子座", (5, 21)),
+            ("巨蟹座", (6, 22)),
+            ("狮子座", (7, 23)),
+            ("处女座", (8, 23)),
+            ("天秤座", (9, 23)),
+            ("天蝎座", (10, 24)),
+            ("射手座", (11, 23)),
+            ("摩羯座", (12, 22)),
         ]
-        for sign, (sign_month, start_day) in signs:
-            if month == sign_month and day < start_day:
-                return sign
+        for index, (sign, (sign_month, start_day)) in enumerate(signs):
+            if month == sign_month:
+                if day >= start_day:
+                    return sign
+                return signs[index - 1][0] if index > 0 else "摩羯座"
         return "摩羯座"
 
     def _calculate_birth_zodiac_sign(self, birthday: datetime) -> str:
         return self._calculate_zodiac(birthday)
-
-    def list_records(self) -> list[UserRecordResponse]:
-        records = self.repository.list_by_user(self.user_id)
-        return [self._to_response(record) for record in records]

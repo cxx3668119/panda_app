@@ -1,8 +1,10 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.models.user_record import UserRecord
 from datetime import datetime
+
+
 class UserRecordRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
@@ -48,3 +50,52 @@ class UserRecordRepository:
                 .order_by(UserRecord.id.desc())
             ).all()
         )
+
+    def get_by_user(self, user_id: int, record_id: int) -> UserRecord | None:
+        return self.db.scalar(
+            select(UserRecord).where(
+                UserRecord.id == record_id,
+                UserRecord.user_id == user_id,
+                UserRecord.is_deleted.is_(False),
+            )
+        )
+
+    def update(
+        self,
+        record: UserRecord,
+        *,
+        name: str,
+        birthday: datetime,
+        gender: str,
+        birthplace: str | None,
+        age: int,
+        zodiac: str,
+        horoscope: str,
+        birth_zodiac_sign: str,
+    ) -> UserRecord:
+        record.name = name
+        record.birthday = birthday
+        record.gender = gender
+        record.birthplace = birthplace
+        record.age = age
+        record.zodiac = zodiac
+        record.horoscope = horoscope
+        record.birth_zodiac_sign = birth_zodiac_sign
+        self.db.commit()
+        self.db.refresh(record)
+        return record
+    def delete(self, user_id: int, record_id: int) -> bool:
+        record = self.db.scalar(
+            select(UserRecord).where(
+                UserRecord.id == record_id,
+                UserRecord.user_id == user_id,
+                UserRecord.is_deleted.is_(False),
+            )
+        )
+        if not record:
+            return False
+
+        record.is_deleted = True
+        self.db.commit()
+        return True
+

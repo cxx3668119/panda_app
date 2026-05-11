@@ -9,14 +9,14 @@ from app.db.base import Base
 class DailyFortune(Base):
     __tablename__ = 'daily_fortune'
     __table_args__ = (
-        UniqueConstraint('user_id', 'profile_id', 'fortune_date', name='uk_daily_fortune'),
-        Index('idx_daily_fortune_profile_date', 'profile_id', 'fortune_date'),
+        UniqueConstraint('user_id', 'record_id', 'fortune_date', name='uk_daily_fortune'),
+        Index('idx_daily_fortune_record_date', 'record_id', 'fortune_date'),
         Index('idx_daily_fortune_user_date', 'user_id', 'fortune_date'),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('app_user.id', name='fk_daily_fortune_user'))
-    profile_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('bazi_profile.id', name='fk_daily_fortune_profile'))
+    record_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('user_record.id', name='fk_daily_fortune_record'))
     fortune_date: Mapped[date] = mapped_column(Date)
     score: Mapped[int | None] = mapped_column(SmallInteger)
     keyword_tags: Mapped[str | None] = mapped_column(String(255))

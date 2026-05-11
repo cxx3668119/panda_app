@@ -16,6 +16,7 @@ class BaziProfile(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('app_user.id', name='fk_bazi_profile_user'))
+    active_record_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey('user_record.id', name='fk_bazi_profile_active_record'))
     profile_no: Mapped[str] = mapped_column(String(32), unique=True)
     name: Mapped[str | None] = mapped_column(String(64))
     gender: Mapped[str] = mapped_column(String(16))

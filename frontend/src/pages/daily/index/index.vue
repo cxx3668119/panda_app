@@ -56,6 +56,15 @@
 
   <main v-else class="page-shell">
     <LoadingState text="正在生成今日日运..." />
+    <div class="mt-6 flex flex-wrap gap-3">
+      <button
+        class="btn-ghost"
+        type="button"
+        @click="handleClick('pickRecord')"
+      >
+        {{ userStore.user?.boundRecordId ? "切换" : "选择" }}档案
+      </button>
+    </div>
   </main>
 </template>
 
@@ -77,7 +86,13 @@ const userRecords = computed(() => userStore.userRecords);
 
 onMounted(async () => {
   if (!dailyFortuneStore.today) {
-    await dailyFortuneStore.loadToday();
+    try {
+      await dailyFortuneStore.loadToday();
+    } catch (err) {
+      showToast(
+        err instanceof Error ? err.message : "今日日运获取失败，请稍后重试",
+      );
+    }
   }
   if (!userStore.user?.boundRecordId) {
     pickModalVisible.value = true;

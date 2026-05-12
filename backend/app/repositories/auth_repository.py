@@ -76,10 +76,8 @@ class AuthRepository:
             hasProfile=has_profile,
         )
 
-    def _ensure_demo_user_account(
-        self,
-        user: AppUser,
-    ) -> None:
+    def _ensure_demo_user_account(self) -> None:
+        user = get_or_create_demo_user(self.db)
         changed = False
         if not user.email:
             user.email = settings.demo_email

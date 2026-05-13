@@ -10,7 +10,8 @@ from app.core.exceptions import BusinessError
 from app.core.passwords import hash_password, verify_password
 from app.core.tokens import generate_session_token
 from app.models.app_user import AppUser
-from app.repositories.db_support import get_active_profile, get_or_create_demo_user
+from app.models.user_record import UserRecord
+from app.repositories.db_support import get_or_create_demo_user
 from app.schemas.auth import LoginResponse, LoginUser
 
 
@@ -24,10 +25,10 @@ class AuthRepository:
         if not user or not verify_password(password, user.password_hash):
             raise BusinessError("邮箱或密码错误", status_code=401)
         user.session_token = generate_session_token()
-        profile = get_active_profile(self.db, user.id)
+        has_record = self._has_record(user.id)
         self.db.commit()
         self.db.refresh(user)
-        return self._build_login_response(user, profile is not None)
+        return self._build_login_response(user, has_record)
 
     def register(
         self,
@@ -75,6 +76,16 @@ class AuthRepository:
             ),
             hasProfile=has_profile,
         )
+
+    def _has_record(self, user_id: int) -> bool:
+        return self.db.scalar(
+            select(UserRecord.id)
+            .where(
+                UserRecord.user_id == user_id,
+                UserRecord.is_deleted.is_(False),
+            )
+            .limit(1)
+        ) is not None
 
     def _ensure_demo_user_account(self) -> None:
         user = get_or_create_demo_user(self.db)

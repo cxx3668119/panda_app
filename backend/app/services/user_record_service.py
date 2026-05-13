@@ -1,8 +1,9 @@
-﻿from app.repositories.user_record_repository import UserRecordRepository
-from app.schemas.user_record import UserRecordCreateRequest, UserRecordResponse, UserRecordUpdateRequest
 from sqlalchemy.orm import Session
-from datetime import datetime
+
 from app.core.exceptions import BusinessError
+from app.core.record_utils import calculate_age, calculate_horoscope, calculate_zodiac
+from app.repositories.user_record_repository import UserRecordRepository
+from app.schemas.user_record import UserRecordCreateRequest, UserRecordResponse, UserRecordUpdateRequest
 
 
 class UserRecordService:
@@ -11,21 +12,17 @@ class UserRecordService:
         self.user_id = user_id
 
     def create_record(self, payload: UserRecordCreateRequest) -> UserRecordResponse:
-        age = self._calculate_age(payload.birthday)
-        zodiac = self._calculate_zodiac(payload.birthday)
-        horoscope = self._calculate_horoscope(payload.birthday)
-        birth_zodiac_sign = self._calculate_birth_zodiac_sign(payload.birthday)
-
+        zodiac = calculate_zodiac(payload.birthday)
         record = self.repository.create(
             user_id=self.user_id,
             name=payload.name,
             birthday=payload.birthday,
             gender=payload.gender,
             birthplace=payload.birthplace,
-            age=age,
+            age=calculate_age(payload.birthday),
             zodiac=zodiac,
-            horoscope=horoscope,
-            birth_zodiac_sign=birth_zodiac_sign,
+            horoscope=calculate_horoscope(payload.birthday),
+            birth_zodiac_sign=zodiac,
         )
         return self._to_response(record)
 
@@ -34,21 +31,17 @@ class UserRecordService:
         if not record:
             raise BusinessError("档案不存在", status_code=404)
 
-        age = self._calculate_age(payload.birthday)
-        zodiac = self._calculate_zodiac(payload.birthday)
-        horoscope = self._calculate_horoscope(payload.birthday)
-        birth_zodiac_sign = self._calculate_birth_zodiac_sign(payload.birthday)
-
+        zodiac = calculate_zodiac(payload.birthday)
         updated = self.repository.update(
             record,
             name=payload.name,
             birthday=payload.birthday,
             gender=payload.gender,
             birthplace=payload.birthplace,
-            age=age,
+            age=calculate_age(payload.birthday),
             zodiac=zodiac,
-            horoscope=horoscope,
-            birth_zodiac_sign=birth_zodiac_sign,
+            horoscope=calculate_horoscope(payload.birthday),
+            birth_zodiac_sign=zodiac,
         )
         return self._to_response(updated)
 
@@ -73,42 +66,3 @@ class UserRecordService:
             zodiac=record.zodiac,
             horoscope=record.horoscope,
         )
-
-    def _calculate_age(self, birthday: datetime) -> int:
-        today = datetime.today()
-        return (
-            today.year
-            - birthday.year
-            - ((today.month, today.day) < (birthday.month, birthday.day))
-        )
-
-    def _calculate_zodiac(self, birthday: datetime) -> str:
-        animals = ["猴", "鸡", "狗", "猪", "鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊"]
-        return animals[birthday.year % 12]
-
-    def _calculate_horoscope(self, birthday: datetime) -> str:
-        month = birthday.month
-        day = birthday.day
-        signs = [
-            ("水瓶座", (1, 20)),
-            ("双鱼座", (2, 19)),
-            ("白羊座", (3, 21)),
-            ("金牛座", (4, 20)),
-            ("双子座", (5, 21)),
-            ("巨蟹座", (6, 22)),
-            ("狮子座", (7, 23)),
-            ("处女座", (8, 23)),
-            ("天秤座", (9, 23)),
-            ("天蝎座", (10, 24)),
-            ("射手座", (11, 23)),
-            ("摩羯座", (12, 22)),
-        ]
-        for index, (sign, (sign_month, start_day)) in enumerate(signs):
-            if month == sign_month:
-                if day >= start_day:
-                    return sign
-                return signs[index - 1][0] if index > 0 else "摩羯座"
-        return "摩羯座"
-
-    def _calculate_birth_zodiac_sign(self, birthday: datetime) -> str:
-        return self._calculate_zodiac(birthday)

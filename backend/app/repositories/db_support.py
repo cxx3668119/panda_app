@@ -45,20 +45,6 @@ def get_or_create_demo_user(db: Session) -> AppUser:
     return user
 
 
-def get_active_profile(db: Session, user_id: int) -> BaziProfile | None:
-    return db.scalar(
-        select(BaziProfile)
-        .where(
-            BaziProfile.user_id == user_id,
-            BaziProfile.active_record_id.is_not(None),
-            BaziProfile.is_active.is_(True),
-            BaziProfile.is_deleted.is_(False),
-        )
-        .order_by(BaziProfile.id.desc())
-        .limit(1)
-    )
-
-
 def get_bound_user_record_id(db: Session, user_id: int) -> int | None:
     return db.scalar(
         select(AppUser.bound_record_id)
@@ -83,6 +69,43 @@ def get_bound_user_record(db: Session, user_id: int) -> UserRecord | None:
         )
         .limit(1)
     )
+
+
+def get_latest_user_record(db: Session, user_id: int) -> UserRecord | None:
+    return db.scalar(
+        select(UserRecord)
+        .where(
+            UserRecord.user_id == user_id,
+            UserRecord.is_deleted.is_(False),
+        )
+        .order_by(UserRecord.id.desc())
+        .limit(1)
+    )
+
+
+def get_bound_or_latest_user_record(db: Session, user_id: int) -> UserRecord | None:
+    return get_bound_user_record(db, user_id) or get_latest_user_record(db, user_id)
+
+
+def get_profile_by_record_id(db: Session, user_id: int, record_id: int) -> BaziProfile | None:
+    return db.scalar(
+        select(BaziProfile)
+        .where(
+            BaziProfile.user_id == user_id,
+            BaziProfile.active_record_id == record_id,
+            BaziProfile.is_active.is_(True),
+            BaziProfile.is_deleted.is_(False),
+        )
+        .order_by(BaziProfile.id.desc())
+        .limit(1)
+    )
+
+
+def get_active_profile(db: Session, user_id: int) -> BaziProfile | None:
+    record_id = get_bound_user_record_id(db, user_id)
+    if not record_id:
+        return None
+    return get_profile_by_record_id(db, user_id, record_id)
 
 
 def build_profile_no(user_no: str) -> str:

@@ -9,6 +9,7 @@ from app.core.config import settings
 from app.core.exceptions import BusinessError
 from app.core.passwords import hash_password, verify_password
 from app.models.app_user import AppUser
+from app.models.user_record import UserRecord
 
 
 class AccountRepository:
@@ -62,6 +63,15 @@ class AccountRepository:
         }
 
     def set_bound_record(self, record_id: str | int) -> None:
+        record = self.db.scalar(
+            select(UserRecord).where(
+                UserRecord.id == int(record_id),
+                UserRecord.user_id == self.user.id,
+                UserRecord.is_deleted.is_(False),
+            )
+        )
+        if not record:
+            raise BusinessError("档案不存在", status_code=404)
         self.user.bound_record_id = record_id
         self.db.commit()
         self.db.refresh(self.user)

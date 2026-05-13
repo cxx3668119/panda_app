@@ -11,7 +11,6 @@ from app.repositories.daily_fortune_repository import DailyFortuneRepository
 from app.repositories.growth_repository import GrowthRepository
 from app.repositories.profile_repository import ProfileRepository
 from app.repositories.reminder_repository import ReminderRepository
-from app.repositories.user_record_repository import UserRecordRepository
 from app.services.account_service import AccountService
 from app.services.auth_service import AuthService
 from app.services.chat_service import ChatService
@@ -33,27 +32,40 @@ def get_account_service(
     return AccountService(AccountRepository(db, user))
 
 
-def get_profile_service(db: Session = Depends(get_db)) -> ProfileService:
-    return ProfileService(ProfileRepository(db))
+def get_profile_service(
+    db: Session = Depends(get_db),
+    user: AppUser = Depends(get_current_user),
+) -> ProfileService:
+    return ProfileService(ProfileRepository(db, user))
 
 
 def get_daily_fortune_service(
     db: Session = Depends(get_db),
     user: AppUser = Depends(get_current_user),
 ) -> DailyFortuneService:
-    return DailyFortuneService(DailyFortuneRepository(db,user))
+    return DailyFortuneService(DailyFortuneRepository(db, user))
 
 
-def get_chat_service(db: Session = Depends(get_db)) -> ChatService:
-    return ChatService(ChatRepository(db), ProfileRepository(db))
+def get_chat_service(
+    db: Session = Depends(get_db),
+    user: AppUser = Depends(get_current_user),
+) -> ChatService:
+    profile_repository = ProfileRepository(db, user)
+    return ChatService(ChatRepository(db, user, profile_repository), profile_repository)
 
 
-def get_growth_archive_service(db: Session = Depends(get_db)) -> GrowthArchiveService:
-    return GrowthArchiveService(GrowthRepository(db))
+def get_growth_archive_service(
+    db: Session = Depends(get_db),
+    user: AppUser = Depends(get_current_user),
+) -> GrowthArchiveService:
+    return GrowthArchiveService(GrowthRepository(db, user))
 
 
-def get_reminder_service(db: Session = Depends(get_db)) -> ReminderService:
-    return ReminderService(ReminderRepository(db))
+def get_reminder_service(
+    db: Session = Depends(get_db),
+    user: AppUser = Depends(get_current_user),
+) -> ReminderService:
+    return ReminderService(ReminderRepository(db, user))
 
 
 def get_user_record_service(

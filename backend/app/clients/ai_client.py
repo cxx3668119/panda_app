@@ -1,6 +1,7 @@
-import json
+﻿import json
 
 from openai import OpenAI
+
 from app.core.config import settings
 
 
@@ -16,22 +17,55 @@ class AiClient:
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
+                {'role': 'system', 'content': system_prompt},
+                {'role': 'user', 'content': user_prompt},
             ],
         )
 
         try:
-            print(
-                "AI response dump:",
-                json.dumps(response.model_dump(), ensure_ascii=True),
-            )
+            print('AI response dump:', json.dumps(response.model_dump(), ensure_ascii=True))
         except Exception as exc:
-            print("AI response dump failed:", repr(exc))
+            print('AI response dump failed:', repr(exc))
 
         content = response.choices[0].message.content
         try:
-            print("AI extracted content repr:", ascii(content))
+            print('AI extracted content repr:', ascii(content))
         except Exception as exc:
-            print("AI content debug failed:", repr(exc))
-        return content.strip() if content else ""
+            print('AI content debug failed:', repr(exc))
+        return content.strip() if content else ''
+
+    def stream_text(self, system_prompt: str, user_prompt: str):
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {'role': 'system', 'content': system_prompt},
+                {'role': 'user', 'content': user_prompt},
+            ],
+            stream=True,
+        )
+
+        for chunk in response:
+            try:
+                delta = chunk.choices[0].delta.content
+            except Exception:
+                delta = None
+            if not delta:
+                continue
+
+            for piece in self._split_for_stream(delta):
+                yield piece
+
+    def _split_for_stream(self, text: str):
+        if len(text) <= 12:
+            yield text
+            return
+
+        separators = '，。！？；：\n'
+        buffer = ''
+        for char in text:
+            buffer += char
+            if char in separators or len(buffer) >= 12:
+                yield buffer
+                buffer = ''
+        if buffer:
+            yield buffer

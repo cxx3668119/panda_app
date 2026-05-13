@@ -7,23 +7,29 @@ from app.db.base import Base
 
 
 class AiChatSession(Base):
-    __tablename__ = 'ai_chat_session'
+    __tablename__ = "ai_chat_session"
     __table_args__ = (
-        Index('idx_ai_chat_session_user_date', 'user_id', 'session_date'),
-        Index('idx_ai_chat_session_profile_date', 'profile_id', 'session_date'),
+        Index("idx_ai_chat_session_user_date", "user_id", "session_date"),
+        Index("idx_ai_chat_session_record_date", "record_id", "session_date"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('app_user.id', name='fk_ai_chat_session_user'))
-    profile_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('bazi_profile.id', name='fk_ai_chat_session_profile'))
+    user_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("app_user.id", name="fk_ai_chat_session_user")
+    )
+    record_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("user_record.id", name="fk_ai_chat_session_record")
+    )
     session_no: Mapped[str] = mapped_column(String(32), unique=True)
     session_date: Mapped[date] = mapped_column(Date)
     topic: Mapped[str | None] = mapped_column(String(64))
-    context_scope: Mapped[str] = mapped_column(String(20), default='today')
+    context_scope: Mapped[str] = mapped_column(String(20), default="today")
     question_count: Mapped[int] = mapped_column(default=0)
-    status: Mapped[str] = mapped_column(String(20), default='active')
+    status: Mapped[str] = mapped_column(String(20), default="active")
     expires_at: Mapped[datetime | None] = mapped_column(DateTime)
     is_deleted: Mapped[bool] = mapped_column(default=False)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), server_onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), server_onupdate=func.now()
+    )

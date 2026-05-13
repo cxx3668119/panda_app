@@ -1,5 +1,5 @@
-<template>
-  <main v-if="!booting" class="chat-page">
+﻿<template>
+  <main class="chat-page">
     <section class="chat-shell">
       <header class="chat-header">
         <button class="chat-back" type="button" @click="handleBack">
@@ -14,7 +14,10 @@
       </header>
 
       <section ref="messagesRef" class="chat-stream">
-        <article class="message-row message-row-assistant">
+        <article
+          v-if="messages.length === 0"
+          class="message-row message-row-assistant"
+        >
           <div class="assistant-avatar">
             <img
               alt="熊猫助手"
@@ -23,17 +26,16 @@
             />
           </div>
 
-          <div
+          <!-- <div
             class="message-bubble message-bubble-assistant message-bubble-intro"
           >
             <div class="message-meta">
               <span class="message-name">Panda guide</span>
-              <span class="message-chip">当日上下文</span>
+              <span class="message-chip">褰撴棩涓婁笅鏂?/span>
             </div>
             <div class="message-content">
-              我会结合你今天的档案、日运和连续提问来回答。你可以直接输入最关心的问题，我们就从那里开始。
-            </div>
-          </div>
+              鎴戜細缁撳悎浣犱粖澶╃殑妗ｆ銆佹棩杩愬拰杩炵画鎻愰棶鏉ュ洖绛斻€備綘鍙互鐩存帴杈撳叆鏈€鍏冲績鐨勯棶棰橈紝鎴戜滑灏变粠閭ｉ噷寮€濮嬨€?            </div>
+          </div> -->
         </article>
 
         <article
@@ -65,7 +67,20 @@
             <div v-if="message.role !== 'user'" class="message-meta">
               <span class="message-name">Panda guide</span>
             </div>
-            <div class="message-content">{{ message.content }}</div>
+            <div
+              v-if="
+                message.role === 'assistant' &&
+                chatStore.loading &&
+                !message.content
+              "
+              class="typing-dots"
+              aria-label="正在生成回答"
+            >
+              <span />
+              <span />
+              <span />
+            </div>
+            <div v-else class="message-content">{{ message.content }}</div>
             <div
               v-if="message.disclaimer"
               class="message-disclaimer"
@@ -76,30 +91,6 @@
               "
             >
               {{ message.disclaimer }}
-            </div>
-          </div>
-        </article>
-
-        <article
-          v-if="chatStore.loading"
-          class="message-row message-row-assistant"
-        >
-          <div class="assistant-avatar">
-            <img
-              alt="熊猫助手"
-              class="assistant-avatar__image"
-              src="/panda-badge.png"
-            />
-          </div>
-          <div class="message-bubble message-bubble-assistant typing-bubble">
-            <div class="message-meta">
-              <span class="message-name">Panda guide</span>
-              <span class="message-chip">生成中</span>
-            </div>
-            <div class="typing-dots" aria-label="正在生成回答">
-              <span />
-              <span />
-              <span />
             </div>
           </div>
         </article>
@@ -131,41 +122,45 @@
     </section>
   </main>
 
-  <main v-else class="page-shell">
-    <LoadingState text="正在加载当日问答上下文..." />
-  </main>
+  <!-- <main v-else class="page-shell">
+    <LoadingState text="姝ｅ湪鍔犺浇褰撴棩闂瓟涓婁笅鏂?.." />
+  </main> -->
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import LoadingState from "@/components/common/LoadingState.vue";
 import { useChatStore } from "@/stores/chat";
 
 const router = useRouter();
 const chatStore = useChatStore();
 const question = ref("");
-const booting = ref(true);
+// const booting = ref(true);
 const messagesRef = ref<HTMLElement | null>(null);
 
 const messages = computed(() => chatStore.messages);
 
 onMounted(async () => {
   try {
-    if (!chatStore.quota || !chatStore.messages.length) {
-      await chatStore.loadSession();
-    }
+    await chatStore.loadSession();
+    await chatStore.streamIntroIfNeeded();
   } finally {
-    booting.value = false;
+    // booting.value = false;
     await scrollToBottom("auto");
   }
 });
 
 watch(
-  () => [messages.value.length, chatStore.loading],
+  () =>
+    messages.value.map((message) => ({
+      id: message.id,
+      contentLength: message.content.length,
+      disclaimer: message.disclaimer ?? "",
+    })),
   async () => {
     await scrollToBottom();
   },
+  { deep: true, flush: "post" },
 );
 
 async function handleSend() {
@@ -174,6 +169,7 @@ async function handleSend() {
 
   const currentQuestion = question.value.trim();
   question.value = "";
+  await scrollToBottom("smooth");
   await chatStore.sendQuestion(currentQuestion);
 }
 
@@ -184,10 +180,32 @@ function handleBack() {
 async function scrollToBottom(behavior: ScrollBehavior = "smooth") {
   await nextTick();
 
-  if (!messagesRef.value) return;
+  const container = messagesRef.value;
+  const doc = document.documentElement;
+  const body = document.body;
+  const pageBottom = Math.max(
+    body?.scrollHeight ?? 0,
+    doc?.scrollHeight ?? 0,
+    body?.offsetHeight ?? 0,
+    doc?.offsetHeight ?? 0,
+  );
 
-  messagesRef.value.scrollTo({
-    top: messagesRef.value.scrollHeight,
+  if (container) {
+    const hasOwnScroll =
+      container.scrollHeight > container.clientHeight + 8 &&
+      getComputedStyle(container).overflowY !== "visible";
+
+    if (hasOwnScroll) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior,
+      });
+      return;
+    }
+  }
+
+  window.scrollTo({
+    top: pageBottom,
     behavior,
   });
 }
@@ -516,8 +534,12 @@ async function scrollToBottom(behavior: ScrollBehavior = "smooth") {
   }
 
   .chat-footer {
-    width: calc(100% - 12px);
-    bottom: 10px;
+    width: 100%;
+    padding: 0 10px;
+    bottom: 0px;
+    overflow: hidden;
+    z-index: 1000;
+    
   }
 
   .composer-card {

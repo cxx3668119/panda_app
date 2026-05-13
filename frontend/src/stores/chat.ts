@@ -1,44 +1,91 @@
-import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
-import { askAi, fetchQuota, fetchTodaySession } from '@/api/chat'
-import type { ChatMessage, QuotaData } from '@/types'
+﻿import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { askAiStream, fetchTodaySession, streamIntro } from '@/api/chat'
+import type { ChatMessage } from '@/types'
+
+const DISCLAIMER_TEXT =
+  '本内容仅供娱乐陪伴和自我探索参考，不构成医疗、法律、投资等专业建议，请结合实际情况独立判断。'
 
 export const useChatStore = defineStore('chat', () => {
   const messages = ref<ChatMessage[]>([])
-  const quota = ref<QuotaData | null>(null)
   const loading = ref(false)
 
-  const remainCount = computed(() => {
-    if (!quota.value) return 0
-    return quota.value.freeLimit - quota.value.freeUsed + quota.value.paidBalance
-  })
+  function touchMessages() {
+    messages.value = [...messages.value]
+  }
 
   async function loadSession() {
     messages.value = await fetchTodaySession()
-    quota.value = await fetchQuota()
+  }
+
+  async function streamIntroIfNeeded() {
+    if (messages.value.length > 0) return
+
+    loading.value = true
+    const assistantMessage: ChatMessage = {
+      id: Date.now() + 1,
+      role: 'assistant',
+      content: '',
+      disclaimer: undefined,
+      rejected: false,
+    }
+    messages.value.push(assistantMessage)
+    touchMessages()
+
+    try {
+      await streamIntro((chunk) => {
+        assistantMessage.content += chunk
+        touchMessages()
+      })
+      assistantMessage.disclaimer = DISCLAIMER_TEXT
+      touchMessages()
+    } catch (error) {
+      messages.value.pop()
+      touchMessages()
+      throw error
+    } finally {
+      loading.value = false
+    }
   }
 
   async function sendQuestion(question: string) {
     loading.value = true
+    const rejectedLikely = question.includes('投资')
     messages.value.push({ id: Date.now(), role: 'user', content: question })
-    const answer = await askAi(question)
-    messages.value.push(answer)
-    if (quota.value && !answer.rejected) {
-      if (quota.value.freeUsed < quota.value.freeLimit) {
-        quota.value.freeUsed += 1
-      } else if (quota.value.paidBalance > 0) {
-        quota.value.paidBalance -= 1
-      }
+
+    const assistantMessage: ChatMessage = {
+      id: Date.now() + 1,
+      role: 'assistant',
+      content: '',
+      disclaimer: undefined,
+      rejected: false,
     }
-    loading.value = false
+    messages.value.push(assistantMessage)
+    touchMessages()
+
+    try {
+      await askAiStream(question, (chunk) => {
+        assistantMessage.content += chunk
+        touchMessages()
+      })
+
+      assistantMessage.disclaimer = DISCLAIMER_TEXT
+      assistantMessage.rejected = rejectedLikely
+      touchMessages()
+    } catch (error) {
+      messages.value.pop()
+      touchMessages()
+      throw error
+    } finally {
+      loading.value = false
+    }
   }
 
   return {
     messages,
-    quota,
     loading,
-    remainCount,
     loadSession,
-    sendQuestion
+    streamIntroIfNeeded,
+    sendQuestion,
   }
 })

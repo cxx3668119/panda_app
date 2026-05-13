@@ -47,8 +47,10 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
-client.interceptors.response.use(
-  (response) => {
+// 这里故意把响应解包成业务 data，而不是保留 AxiosResponse 原型。
+// 用 any 是为了兼容当前项目的轻量 API 包装风格，避免拦截器泛型和 axios 原生类型冲突。
+(client.interceptors.response as any).use(
+  (response: any) => {
     const result = response.data as ApiResponse<unknown>;
     if (!result?.success) {
       throw new ApiError(
@@ -94,4 +96,10 @@ export function postForm<T>(path: string, body: FormData) {
   });
 }
 
-export { TOKEN_STORAGE_KEY, USER_STORAGE_KEY, clearAuthStorage, getAuthToken };
+export {
+  TOKEN_STORAGE_KEY,
+  USER_STORAGE_KEY,
+  clearAuthStorage,
+  getAuthToken,
+  getApiBaseUrl,
+};

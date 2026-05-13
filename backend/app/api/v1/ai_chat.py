@@ -14,9 +14,9 @@ def get_quota(_: str = Depends(get_current_token), service: ChatService = Depend
     return ok(service.get_quota().model_dump())
 
 
-@router.get('/chat/session/today')
-def get_today_session(_: str = Depends(get_current_token), service: ChatService = Depends(get_chat_service)):
-    return ok([item.model_dump() for item in service.get_today_session()])
+@router.get('/chat/session')
+def get_session(_: str = Depends(get_current_token), service: ChatService = Depends(get_chat_service)):
+    return ok([item.model_dump() for item in service.get_session()])
 
 
 @router.post('/chat/ask')

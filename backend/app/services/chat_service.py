@@ -15,7 +15,7 @@ class ChatService:
     def get_quota(self) -> QuotaResponse:
         return QuotaResponse(**self.repository.get_quota())
 
-    def get_today_session(self) -> list[ChatMessageResponse]:
+    def get_session(self) -> list[ChatMessageResponse]:
         return [ChatMessageResponse(**item) for item in self.repository.get_messages()]
 
     def ask(self, payload: AskAiRequest) -> ChatMessageResponse:

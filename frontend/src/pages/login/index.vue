@@ -83,9 +83,9 @@ const userStore = useUserStore();
 const currentEnv = import.meta.env.MODE;
 const mode = ref<"login" | "register">("login");
 const nickname = ref("");
-const email = ref(currentEnv === "development" ? "demo@example.com" : "");
+const email = ref("");
 const mobile = ref("");
-const password = ref(currentEnv === "development" ? "123456" : "");
+const password = ref("");
 const confirmPassword = ref("");
 const timezone = ref("Asia/Shanghai");
 const loading = ref(false);
@@ -102,8 +102,8 @@ function toggleMode() {
     confirmPassword.value = "";
     timezone.value = "Asia/Shanghai";
   } else {
-    email.value = "demo@example.com";
-    password.value = "123456";
+    email.value = "";
+    password.value = "";
     confirmPassword.value = "";
   }
 }
@@ -150,7 +150,8 @@ async function handleSubmit() {
             password: password.value,
             timezone: timezone.value.trim(),
           });
-    router.push(result.hasProfile ? "/daily" : "/profile/create");
+    // router.push(result.hasProfile ? "/daily" : "/profile/create");
+    router.push("/daily");
   } catch (err) {
     error.value =
       err instanceof Error

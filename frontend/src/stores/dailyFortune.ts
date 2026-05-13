@@ -6,9 +6,23 @@ import type { DailyFortuneData } from '@/types'
 export const useDailyFortuneStore = defineStore('dailyFortune', () => {
   const today = ref<DailyFortuneData | null>(null)
   const history = ref<DailyFortuneData[]>([])
+  const loadingToday = ref(false)
+  const todayError = ref('')
 
   async function loadToday() {
-    today.value = await fetchTodayFortune()
+    loadingToday.value = true
+    todayError.value = ''
+
+    try {
+      today.value = await fetchTodayFortune()
+      return today.value
+    } catch (error) {
+      todayError.value =
+        error instanceof Error ? error.message : '今日运势获取失败，请稍后重试'
+      throw error
+    } finally {
+      loadingToday.value = false
+    }
   }
 
   async function loadHistory() {
@@ -18,6 +32,8 @@ export const useDailyFortuneStore = defineStore('dailyFortune', () => {
   return {
     today,
     history,
+    loadingToday,
+    todayError,
     loadToday,
     loadHistory
   }

@@ -16,6 +16,8 @@ import {
   login as loginRequest,
   register as registerRequest,
 } from "@/api/auth";
+import { fetchTodayFortune } from "@/api/daily";
+import { useDailyFortuneStore } from "@/stores/dailyFortune";
 import { getRecordList } from "@/api/record";
 import type {
   AccountUpdatePayload,
@@ -36,6 +38,7 @@ function readStoredUser(): UserAccount | null {
 }
 
 export const useUserStore = defineStore("user", () => {
+  const dailyFortuneStore = useDailyFortuneStore();
   const storedUser = readStoredUser();
   const token = ref(localStorage.getItem(TOKEN_STORAGE_KEY) || "");
   const user = ref<UserAccount | null>(storedUser);
@@ -105,6 +108,8 @@ export const useUserStore = defineStore("user", () => {
     if (user.value) {
       await setRecord({ recordId });
       user.value.boundRecordId = recordId;
+      persist(token.value, user.value);
+      await dailyFortuneStore.loadToday();
     }
   }
 

@@ -6,7 +6,7 @@ export async function fetchQuota() {
 }
 
 export async function fetchTodaySession() {
-  return get<ChatMessage[]>('/ai/chat/session/today')
+  return get<ChatMessage[]>('/ai/chat/session')
 }
 
 export async function askAi(question: string): Promise<ChatMessage> {

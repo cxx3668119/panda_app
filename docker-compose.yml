@@ -34,6 +34,10 @@ services:
       DEMO_EMAIL: ${DEMO_EMAIL:-demo@example.com}
       DEMO_PASSWORD: ${DEMO_PASSWORD:-change_demo_password}
       FREE_CHAT_LIMIT: ${FREE_CHAT_LIMIT:-3}
+      AI_API_KEY: ${AI_API_KEY:-change_ai_api_key}
+      AI_BASE_URL: ${AI_BASE_URL:-https://token-plan-cn.xiaomimimo.com/v1}
+      AI_MODEL: ${AI_MODEL:-mimo-v2.5-pro}
+      DAILY_FORTUNE_PROMPT_VERSION: ${DAILY_FORTUNE_PROMPT_VERSION:-1.0}
       UPLOAD_DIR: uploads
       AVATAR_DIR: uploads/avatars
       TZ: ${TZ:-Asia/Shanghai}

@@ -1,6 +1,9 @@
 ﻿<template>
   <main class="chat-page">
-    <section class="chat-shell">
+    <section
+      class="chat-shell"
+      :style="{ '--chat-footer-space': `${footerHeight}px` }"
+    >
       <header class="chat-header">
         <button class="chat-back" type="button" @click="handleBack">
           <span class="chat-back__icon"><</span>
@@ -97,7 +100,7 @@
       </section>
     </section>
 
-    <section class="chat-footer">
+    <section ref="footerRef" class="chat-footer">
       <div class="composer-card">
         <div class="composer-main">
           <textarea
@@ -128,7 +131,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useChatStore } from "@/stores/chat";
 
@@ -137,10 +140,23 @@ const chatStore = useChatStore();
 const question = ref("");
 // const booting = ref(true);
 const messagesRef = ref<HTMLElement | null>(null);
+const footerRef = ref<HTMLElement | null>(null);
+const footerHeight = ref(172);
+let footerResizeObserver: ResizeObserver | null = null;
 
 const messages = computed(() => chatStore.messages);
 
 onMounted(async () => {
+  lockPageScroll();
+  measureFooterHeight();
+  if (typeof ResizeObserver !== "undefined" && footerRef.value) {
+    footerResizeObserver = new ResizeObserver(() => {
+      measureFooterHeight();
+    });
+    footerResizeObserver.observe(footerRef.value);
+  }
+  window.addEventListener("resize", measureFooterHeight);
+
   try {
     await chatStore.loadSession();
     await chatStore.streamIntroIfNeeded();
@@ -163,6 +179,13 @@ watch(
   { deep: true, flush: "post" },
 );
 
+onBeforeUnmount(() => {
+  footerResizeObserver?.disconnect();
+  footerResizeObserver = null;
+  window.removeEventListener("resize", measureFooterHeight);
+  unlockPageScroll();
+});
+
 async function handleSend() {
   if (!question.value.trim()) return;
   if (chatStore.loading) return;
@@ -177,43 +200,44 @@ function handleBack() {
   router.back();
 }
 
+function measureFooterHeight() {
+  const footer = footerRef.value;
+  if (!footer) return;
+  footerHeight.value = Math.ceil(footer.getBoundingClientRect().height) + 24;
+}
+
 async function scrollToBottom(behavior: ScrollBehavior = "smooth") {
   await nextTick();
+  measureFooterHeight();
 
   const container = messagesRef.value;
-  const doc = document.documentElement;
-  const body = document.body;
-  const pageBottom = Math.max(
-    body?.scrollHeight ?? 0,
-    doc?.scrollHeight ?? 0,
-    body?.offsetHeight ?? 0,
-    doc?.offsetHeight ?? 0,
-  );
+  if (!container) return;
 
-  if (container) {
-    const hasOwnScroll =
-      container.scrollHeight > container.clientHeight + 8 &&
-      getComputedStyle(container).overflowY !== "visible";
-
-    if (hasOwnScroll) {
-      container.scrollTo({
-        top: container.scrollHeight,
-        behavior,
-      });
-      return;
-    }
-  }
-
-  window.scrollTo({
-    top: pageBottom,
+  container.scrollTo({
+    top: container.scrollHeight,
     behavior,
   });
+}
+
+function lockPageScroll() {
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+}
+
+function unlockPageScroll() {
+  document.documentElement.style.overflow = "";
+  document.body.style.overflow = "";
 }
 </script>
 
 <style scoped>
 .chat-page {
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background:
     radial-gradient(
       ellipse 70% 45% at 12% 4%,
@@ -229,9 +253,14 @@ async function scrollToBottom(behavior: ScrollBehavior = "smooth") {
 }
 
 .chat-shell {
+  flex: 1;
+  min-height: 0;
   width: min(100%, 860px);
   margin: 0 auto;
-  padding: 18px 16px 172px;
+  padding: 18px 16px 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .chat-header {
@@ -293,9 +322,19 @@ async function scrollToBottom(behavior: ScrollBehavior = "smooth") {
 }
 
 .chat-stream {
+  flex: 1;
+  min-height: 0;
   display: grid;
   gap: 18px;
   padding-top: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.chat-stream::after {
+  content: "";
+  display: block;
+  height: 4px;
 }
 
 .message-row {
@@ -427,13 +466,16 @@ async function scrollToBottom(behavior: ScrollBehavior = "smooth") {
 }
 
 .chat-footer {
-  position: fixed;
-  left: 50%;
+  position: relative;
+  left: auto;
   right: auto;
-  bottom: 16px;
+  bottom: auto;
   z-index: 12;
   width: min(calc(100% - 20px), 860px);
-  transform: translateX(-50%);
+  margin: 0 auto;
+  margin-top: -8px;
+  padding: 0 0 16px;
+  flex-shrink: 0;
 }
 
 .composer-card {
@@ -520,7 +562,7 @@ async function scrollToBottom(behavior: ScrollBehavior = "smooth") {
 
 @media (max-width: 640px) {
   .chat-shell {
-    padding: 14px 10px 154px;
+    padding: 14px 10px 0;
   }
 
   .chat-header {
@@ -536,10 +578,8 @@ async function scrollToBottom(behavior: ScrollBehavior = "smooth") {
   .chat-footer {
     width: 100%;
     padding: 0 10px;
-    bottom: 0px;
-    overflow: hidden;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
     z-index: 1000;
-    
   }
 
   .composer-card {

@@ -140,6 +140,8 @@ import DailyFortuneDetail from "@/components/daily/DailyFortuneDetail.vue";
 import { useDailyFortuneStore } from "@/stores/dailyFortune";
 import { useUserStore } from "@/stores/user";
 import { showToast, showSuccessToast, showFailToast } from "vant";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const userStore = useUserStore();
 const dailyFortuneStore = useDailyFortuneStore();
@@ -187,7 +189,10 @@ async function handleClick(action: string) {
   if (action === "modalConfirm") {
     const nextRecordId = Number(pickRecordId.value);
     const currentRecordId = Number(userStore.user?.boundRecordId || "");
-
+    if (!userRecords.value.length) {
+      router.push("/me/record");
+    }
+    
     if (!nextRecordId) {
       showFailToast("请先选择一个档案");
       return;

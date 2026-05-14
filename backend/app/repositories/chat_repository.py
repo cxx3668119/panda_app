@@ -12,7 +12,6 @@ from app.models.ai_chat_session import AiChatSession
 from app.models.app_user import AppUser
 from app.repositories.db_support import (
     get_bound_or_latest_user_record,
-    get_profile_by_record_id,
     today_local,
 )
 
@@ -109,19 +108,23 @@ class ChatRepository:
         return self._get_current_record()
 
     def _get_current_record(self):
-        return get_bound_or_latest_user_record(self.db, self.user.id)
+        record = get_bound_or_latest_user_record(self.db, self.user.id)
+        if record and self.user.bound_record_id != record.id:
+            self.user.bound_record_id = record.id
+            self.db.flush()
+        return record
 
     def _get_or_create_session(self) -> AiChatSession:
         record = self._get_current_record()
         if record is None:
             raise ValueError("record missing")
-        # profile = self.profile_repository._ensure_profile_for_record(record)
 
         session = self.db.scalar(
             select(AiChatSession)
             .where(
                 AiChatSession.user_id == self.user.id,
-                AiChatSession.record_id == self.user.bound_record_id,
+                AiChatSession.record_id == record.id,
+                AiChatSession.session_date == today_local(),
                 AiChatSession.is_deleted.is_(False),
                 AiChatSession.status == "active",
             )

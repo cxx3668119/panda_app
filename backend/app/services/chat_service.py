@@ -73,14 +73,19 @@ class ChatService:
         if profile['birthTimeUnknown']:
             raise BusinessError('出生时辰未知时暂不支持 AI 提问', status_code=400)
 
-        user_message = {
-            'id': int(time() * 1000),
-            'role': 'user',
-            'content': payload.question,
-            'disclaimer': None,
-            'rejected': False,
-        }
-        self.repository.append_message(user_message)
+        try:
+            user_message = {
+                'id': int(time() * 1000),
+                'role': 'user',
+                'content': payload.question,
+                'disclaimer': None,
+                'rejected': False,
+            }
+            self.repository.append_message(user_message)
+            self.repository.commit()
+        except Exception:
+            self.repository.rollback()
+            raise
 
         rejected = '投资' in payload.question
         record = self.repository.get_current_record()
